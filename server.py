@@ -28,30 +28,29 @@ def index():
 def input_ingredient():
     """User homepage."""
     # To-do: Store e-mail and password in user data table. 
-    name = request.form.get("name")
+    name = request.form.get('name')
     
 
     return render_template('user.html', name=name)
 
 
-@app.route('/search')
-def search_ingredient():
-	"""User searches for an ingredient."""
+@app.route('/recipe', methods=['GET'])
+def show_recipe_info():
+	"""Display page for the ingredient."""
 
-	return render_template('search.html')
+	recipe = request.args.get('recipe')
+
+	return render_template('recipe.html', recipe=recipe)
+
 
 
 @app.route('/ingredient', methods=['GET'])
 def show_ingredient_info():
-	"""Display page for the ingredient."""
+    """Display page for the ingredient."""
 
-	ingredient = request.args.get('ingredient')
+    ingredient = request.args.get('ingredient')
 
-	return render_template('ingredient.html', ingredient=ingredient)
-
-
-
-
+    return render_template('ingredient.html', ingredient=ingredient)
 
 
 

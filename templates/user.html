@@ -16,7 +16,19 @@
 
 <h3> List of Ingredients: </h3> 
 
- <a href='/search'>Search For an Ingredient</a>
+<h4> List of Recipes: </h4> 
+
+ <form action='/recipe' method=['GET']>
+ <label>Recipe: <input type="text" name="recipe"></label><br><br>
+ <input type="submit" value="submit">
+</form>
+
+ <form action='/ingredient' method=['GET']>
+ <label>Ingredient: <input type="text" name="ingredient"></label><br><br>
+ <input type="submit" value="submit">
+</form>
+
+
  
 
 
