@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+<head>
+	<title>Veganista</title>
+</head>
+
+<body>
+  <hr>
+
+  <p>
+  {% for message in get_flashed_messages() %}
+    {{ message }}
+  {% endfor %}
+  </p>
+
+
+  {% block content %} put your content here {% endblock %}
+
+
+</body>
+</html

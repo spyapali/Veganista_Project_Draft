@@ -1,4 +1,4 @@
-"""Models and database functions for Ratings project."""
+"""Models and database functions for Rating  ss project."""
 
 from flask_sqlalchemy import SQLAlchemy
 
@@ -18,10 +18,10 @@ class User(db.Model):
     __tablename__ = "users"
 
     user_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    name = db.Column(db.String(64), nullable=False)
-    email = db.Column(db.String(64), nullable=False)
+    first_name = db.Column(db.String(64), nullable=False)
+    last_name = db.Column(db.String(64), nullable=False)
+    username = db.Column(db.String(64), nullable=False)
     password = db.Column(db.String(64), nullable=False)
-
 
 class Input(db.Model):
     """Recipe User enters."""
@@ -34,28 +34,20 @@ class Input(db.Model):
     eaten_at = db.Column(db.DateTime)
     input_name = db.Column(db.String(64), nullable=False)
 
-    user = db.relationship("User", backref=db.backref("users", order_by=input_id))
+    user = db.relationship("User", backref=db.backref("inputs", order_by=input_id))
     
 
 class Caching_Data_Recipes(db.Model):
     """Json responses for recipes stored when making an API call."""
 
-    __tablename__ = "recipes"
+    __tablename__ = "recipes" 
 
     recipe_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     search_term = db.Column(db.String(64))
     json_response = db.Column(db.String(2000))
 
 
-class Caching_Data_Ingredients(db.Model):
-    """Json responses stored for ingredients when making an API call."""
-
-    __tablename__ = "ingredients"
-
-    ingredient_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    search_term = db.Column(db.String(64))
-    json_response = db.Column(db.String(100))
-
+# Supplement reminders through text will be a nice-to-have feature
 class Supplements(db.Model):
     """Supplements taken"""
 
@@ -76,7 +68,7 @@ def connect_to_db(app):
     """Connect the database to our Flask app."""
 
     # Configure to use our PstgreSQL database
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/nutrition'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///nutrition'
     db.app = app
     db.init_app(app)
 

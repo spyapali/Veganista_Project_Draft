@@ -1,17 +1,16 @@
-
+{% extends 'base.html' %}
 {% block content %}
-
-<h1>Welcome to Veganista!</h1>
 
 <h2>Sign-Up</h2>
 
-<form action="/user" method="POST">
-	<label>Name: <input type="text" name="name"></label><br><br>
-    <label>Email: <input type="text" name="email"></label><br><br>
+<form action="/sign-up" method="POST">
+	<label>First Name: <input type="text" name="firstname"></label><br><br>
+	<label>Last Name: <input type="text" name="lastname"></label><br><br>
+    <label>Username: <input type="text" name="username"></label><br><br>
     <label>Password: <input type="text" name="password"></label><br><br>
-    <label>Height <input type="text" name="height"></label><br><br>
-    <label>Ideal (or current) Weight: <input type="text" name="weight"></label><br><br>
+ 
     <input type="submit" value="submit">
+  
 </form>
 
 

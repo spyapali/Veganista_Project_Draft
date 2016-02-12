@@ -1,31 +1,33 @@
 
+{% extends 'base.html' %}
 {% block content %}
 
-<h1>Welcome {{ name }}!</h1>
+<h1>Welcome {{ firstname }}!</h1>
 
 
-<h3>Calculated BMI: </h3>
+<!-- <h3>Calculated BMI: </h3>
 
 <h3> Calculated Height Requirement: </h3> 
 
 <h3> Calculated Fat Requirement: </h3>
 
-<!-- Here is your calculated BMI, and here is your calculated protein, fat and carbohydrate requirements. -->
+Here is your calculated BMI, and here is your calculated protein, fat and carbohydrate requirements.
 
-<h3> Calculated Carb Requirement: </h3>
+<h3> Calculated Carb Requirement: </h3> -->
+<!-- 
+<h4> List of Recipes: </h4>  -->
 
-<h3> List of Ingredients: </h3> 
 
-<h4> List of Recipes: </h4> 
-
- <form action='/recipe' method=['GET']>
+<!-- convert bottom into a button -->
+ <form action='/user/<int:user_id>/recipe' method=['GET']>
  <label>Recipe: <input type="text" name="recipe"></label><br><br>
  <input type="submit" value="submit">
 </form>
 
- <form action='/ingredient' method=['GET']>
- <label>Ingredient: <input type="text" name="ingredient"></label><br><br>
- <input type="submit" value="submit">
+
+
+<form action='/logout'>
+	<input type="submit" value="log out">
 </form>
 
 
