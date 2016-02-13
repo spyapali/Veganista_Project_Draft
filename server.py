@@ -5,9 +5,9 @@ from jinja2 import StrictUndefined
 from flask import Flask, render_template, redirect, request, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
 
-from model import connect_to_db, db, User, Recipe
+from model import connect_to_db, db, User, Input
 
-from datetime import utc 
+from datetime import datetime
 
 
 app = Flask(__name__)
@@ -96,11 +96,17 @@ def show_user_page(user_id):
     return render_template('user.html', firstname=firstname, user=user)
 
 
-# @app.route('/user/<int:user_id>/recipe', methods=['POST'])
-# def process_recipe(user_id):
+@app.route('/user/<int:user_id>/recipe', methods=['POST'])
+def process_recipe(user_id):
 
-#     recipe = request.form.get("recipe")
-#     recipe = Input(user_id=user_id, eaten_at=datetime.utc.now())
+    recipe = request.form.get("recipe")
+    recipe = Input(user_id=user_id, eaten_at=datetime.utc.now(), input_name=recipe)
+
+    db.session.add(recipe)
+    db.session.commit()
+
+    flash('Your recipe has been stored.')
+    redirect('/user/<int:user_id>')
 
 
 @app.route('/recipe/<int:recipe_id>', methods=['GET'])
@@ -109,6 +115,7 @@ def show_recipe_info():
 
 	recipe = request.args.get('recipe')
     # To-Do list: display the recipe name and the time during which the recipe appeared.
+
 
 	return render_template('recipe.html', recipe=recipe)
 

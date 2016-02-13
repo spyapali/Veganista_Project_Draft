@@ -1,6 +1,7 @@
 """Models and database functions for Rating  ss project."""
 
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime  
 
 # This is the connection to the PostgreSQL database; we're getting this through
 # the Flask-SQLAlchemy helper library. On this, we can find the `session`
@@ -31,7 +32,7 @@ class Input(db.Model):
 
     input_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
-    eaten_at = db.Column(db.DateTime)
+    eaten_at = db.Column(db.DateTime, default=datetime.utcnow())
     input_name = db.Column(db.String(64), nullable=False)
 
     user = db.relationship("User", backref=db.backref("inputs", order_by=input_id))
