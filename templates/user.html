@@ -19,13 +19,10 @@ Here is your calculated BMI, and here is your calculated protein, fat and carboh
 
 
 <!-- convert bottom into a button -->
- <form action='/user/<int:user_id>/recipe' method=['GET']>
- <label>Recipe: <input type="text" name="recipe"></label><br><br>
- <input type="submit" value="submit">
+ <form action='/user/{{ user.user_id }}/recipe' method=['POST']>
+ 	<label>Recipe: <input type="text" name="recipe_val"></label><br><br>
+ 	<input type="submit" value="submit">
 </form>
-
-
-
 
 
 

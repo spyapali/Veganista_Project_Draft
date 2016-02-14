@@ -5,7 +5,9 @@ from jinja2 import StrictUndefined
 from flask import Flask, render_template, redirect, request, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
 
-from model import connect_to_db, db, User
+from model import connect_to_db, db, User, Input
+
+from datetime import datetime
 
 
 app = Flask(__name__)
@@ -30,36 +32,24 @@ def sign_up():
 
     return render_template('sign_up.html')
 
-# @app.route("/sign-up", methods=["POST"])
-# def sign_up_new_user():
-#     """Add a new user to the database and session."""
 
-#     sign-up = request.form.get("")
-#     password = request.form.get("password")
-#     age = int(request.form.get("age"))
-#     zipcode = request.form.get("zipcode")
-    
-#     # Creating new user in our database based on email, password, age, and zipcode. 
-#     new_user = User(email=email, password=password, age=age, zipcode=zipcode)
-#     db.session.add(new_user)
-#     db.session.commit()
-
-#     new_user_id = new_user.user_id
-#     # Add the new user to the session. 
-#     session["user_id"] = new_user_id
-#     flash("Thank you. Your account has been created.")  
-
-#     new_user_details = "/users/%d" % (new_user_id)
-#     return redirect(new_user_details)
-
-#     return render_template("sign_up.html")
-
-
-@app.route('/sign-up')
+@app.route('/sign-up', methods=['POST'])
 def sign_up_process():
     """Sign up processing""" 
 
+    firstname = request.form.get("firstname")
+    lastname = request.form.get("lastname")
+    username = request.form.get("username")
+    password = request.form.get("password")
 
+    user = User(first_name=firstname, last_name=lastname,
+                    username=username, password=password)
+
+    db.session.add(user)
+    db.session.commit()
+
+    flash("Thanks for signing up! Please log in to continue.")
+    return redirect("/login")
 
 
 @app.route('/login')
@@ -85,7 +75,7 @@ def process_user_login():
         user_id = user.user_id
         session["user_id"] = user_id
         flash("Logged In")
-        user_details = "/users/%d" % (user_id)
+        user_details = "/user/%d" % (user_id)
         return redirect(user_details)
     else:
         flash("Sorry, you're not a registered user. Please sign up.")
@@ -94,34 +84,49 @@ def process_user_login():
 
 
 @app.route('/user/<int:user_id>', methods=['POST', 'GET'])
-def input_ingredient():
+def show_user_page(user_id):
     """User homepage."""
     # To-do: Store e-mail and password in user data table. 
-    firstname = request.form.get('firstname')
+    user = User.query.get(user_id)
+    firstname = user.first_name
+    # creating a user object.
+
+    
+
+    return render_template('user.html', firstname=firstname, user=user)
 
 
-    return render_template('user.html', firstname=firstname)
+@app.route('/user/<int:user_id>/recipe', methods=['POST'])
+def process_recipe(user_id):
+
+    recipe = request.form.get("recipe")
+    recipe = Input(user_id=user_id, eaten_at=datetime.utc.now(), input_name=recipe)
+
+    db.session.add(recipe)
+    db.session.commit()
+
+    flash('Your recipe has been stored.')
+    redirect('/user/<int:user_id>')
 
 
-@app.route('/recipe', methods=['GET'])
+@app.route('/recipe/<int:recipe_id>', methods=['GET'])
 def show_recipe_info():
 	"""Display page for the ingredient."""
 
 	recipe = request.args.get('recipe')
+    # To-Do list: display the recipe name and the time during which the recipe appeared.
 
 
 	return render_template('recipe.html', recipe=recipe)
 
 
+@app.route("/logout")
+def log_out_user():
+    """Logging out user and redirecting to homepage."""
 
-# @app.route('/ingredient', methods=['GET'])
-# def show_ingredient_info():
-#     """Display page for the ingredient."""
-
-#     ingredient = request.args.get('ingredient')
-#     # TO-DO: If the ingredient is vegan, it'll get stored in my database. 
-
-#     return render_template('ingredient.html', ingredient=ingredient)
+    del session["user_id"]
+    flash("Logged out")
+    return redirect("/")
 
 
 
@@ -136,5 +141,3 @@ if __name__ == "__main__":
 
     # Use the DebugToolbar
     DebugToolbarExtension(app)
-
-    app.run()
