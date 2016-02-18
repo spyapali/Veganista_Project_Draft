@@ -1,0 +1,328 @@
+{
+    "recipe" : {
+      "uri" : "http://www.edamam.com/ontologies/edamam.owl#recipe_5e676c40b0f4c4d324f451ac92042b98",
+      "label" : "Pepper Vinegar",
+      "image" : "https://www.edamam.com/web-img/9ac/9ac93c85883ced0f8cdcceaea9d9bd1c.jpg",
+      "source" : "Epicurious",
+      "sourceIcon" : "http://www.epicurious.com/favicon.ico",
+      "url" : "http://www.epicurious.com/recipes/food/views/Pepper-Vinegar-388664",
+      "shareAs" : "http://www.edamam.com/recipe/pepper-vinegar-5e676c40b0f4c4d324f451ac92042b98/chicken/vegan",
+      "yield" : 2.0,
+      "dietLabels" : [ "Low-Fat", "Low-Sodium" ],
+      "healthLabels" : [ "Vegan", "Vegetarian", "Paleo", "Dairy-Free", "Gluten-Free", "Egg-Free", "Peanut-Free", "Tree-Nut-Free", "Soy-Free", "Fish-Free", "Shellfish-Free" ],
+      "cautions" : [ ],
+      "ingredientLines" : [ "2 cups distilled white vinegar", "2 dried chiles de árbol", "2 scotch bonnet chiles", "Ingredient info: you can find chiles de árbol and scotch bonnet chiles at some supermarkets and at latin markets." ],
+      "ingredients" : [ {
+        "text" : "2 cups distilled white vinegar",
+        "quantity" : 2.0,
+        "measure" : "cup",
+        "food" : "white vinegar",
+        "weight" : 476.0
+      }, {
+        "text" : "2 dried chiles de árbol",
+        "quantity" : 2.0,
+        "measure" : "chile",
+        "food" : "dried chiles",
+        "weight" : 1.0
+      }, {
+        "text" : "2 scotch bonnet chiles",
+        "quantity" : 2.0,
+        "measure" : "chile",
+        "food" : "scotch bonnet",
+        "weight" : 12.2
+      }, {
+        "text" : "Ingredient info: you can find chiles de árbol and scotch bonnet chiles at some supermarkets and at latin markets.",
+        "quantity" : 1.0,
+        "measure" : "can",
+        "food" : "scotch bonnet",
+        "weight" : 196.88185
+      }, {
+        "text" : "Ingredient info: you can find chiles de árbol and scotch bonnet chiles at some supermarkets and at latin markets.",
+        "quantity" : 1.0,
+        "measure" : "chile",
+        "food" : "scotch bonnet",
+        "weight" : 6.1
+      } ],
+      "calories" : 157.778192,
+      "totalWeight" : 692.18185,
+      "totalNutrients" : {
+        "ENERC_KCAL" : {
+          "label" : "Energy",
+          "quantity" : 157.778192,
+          "unit" : "kcal"
+        },
+        "FAT" : {
+          "label" : "Fat",
+          "quantity" : 1.00490014,
+          "unit" : "g"
+        },
+        "FASAT" : {
+          "label" : "Saturated",
+          "quantity" : 0.115690925,
+          "unit" : "g"
+        },
+        "FAMS" : {
+          "label" : "Monounsaturated",
+          "quantity" : 0.04763636999999999,
+          "unit" : "g"
+        },
+        "FAPU" : {
+          "label" : "Polyunsaturated",
+          "quantity" : 0.5041000699999999,
+          "unit" : "g"
+        },
+        "CHOCDF" : {
+          "label" : "Carbs",
+          "quantity" : 15.30618395,
+          "unit" : "g"
+        },
+        "FIBTG" : {
+          "label" : "Fiber",
+          "quantity" : 8.24872845,
+          "unit" : "g"
+        },
+        "SUGAR" : {
+          "label" : "Sugars",
+          "quantity" : 8.842464855,
+          "unit" : "g"
+        },
+        "PROCNT" : {
+          "label" : "Protein",
+          "quantity" : 3.8499641899999997,
+          "unit" : "g"
+        },
+        "NA" : {
+          "label" : "Sodium",
+          "quantity" : 31.948184999999995,
+          "unit" : "mg"
+        },
+        "CA" : {
+          "label" : "Calcium",
+          "quantity" : 52.68000349999999,
+          "unit" : "mg"
+        },
+        "MG" : {
+          "label" : "Magnesium",
+          "quantity" : 52.98000699999999,
+          "unit" : "mg"
+        },
+        "K" : {
+          "label" : "Potassium",
+          "quantity" : 684.5246425,
+          "unit" : "mg"
+        },
+        "FE" : {
+          "label" : "Iron",
+          "quantity" : 2.05376391,
+          "unit" : "mg"
+        },
+        "ZN" : {
+          "label" : "Zinc",
+          "quantity" : 0.61727281,
+          "unit" : "mg"
+        },
+        "P" : {
+          "label" : "Phosphorus",
+          "quantity" : 106.70273999999998,
+          "unit" : "mg"
+        },
+        "VITA_RAE" : {
+          "label" : "Vitamin A",
+          "quantity" : 114.3754695,
+          "unit" : "µg_RAE"
+        },
+        "VITC" : {
+          "label" : "Vitamin C",
+          "quantity" : 96.93065064999999,
+          "unit" : "mg"
+        },
+        "THIA" : {
+          "label" : "Thiamin (B1)",
+          "quantity" : 0.108390925,
+          "unit" : "mg"
+        },
+        "RIBF" : {
+          "label" : "Riboflavin (B2)",
+          "quantity" : 0.18414547999999997,
+          "unit" : "mg"
+        },
+        "NIA" : {
+          "label" : "Niacin (B3)",
+          "quantity" : 3.378882305,
+          "unit" : "mg"
+        },
+        "VITB6A" : {
+          "label" : "Vitamin B6",
+          "quantity" : 1.0840092499999998,
+          "unit" : "mg"
+        },
+        "FOL" : {
+          "label" : "Folic Acid (B9)",
+          "quantity" : 50.001825499999995,
+          "unit" : "µg"
+        },
+        "TOCPHA" : {
+          "label" : "Vitamin E",
+          "quantity" : 1.5161547649999998,
+          "unit" : "mg"
+        },
+        "VITK1" : {
+          "label" : "Vitamin K",
+          "quantity" : 26.473458299999997,
+          "unit" : "µg"
+        }
+      },
+      "totalDaily" : {
+        "ENERC_KCAL" : {
+          "label" : "Energy",
+          "quantity" : 7.888909599999999,
+          "unit" : "%"
+        },
+        "FAT" : {
+          "label" : "Fat",
+          "quantity" : 1.5460002153846153,
+          "unit" : "%"
+        },
+        "FASAT" : {
+          "label" : "Saturated",
+          "quantity" : 0.578454625,
+          "unit" : "%"
+        },
+        "CHOCDF" : {
+          "label" : "Carbs",
+          "quantity" : 5.102061316666666,
+          "unit" : "%"
+        },
+        "FIBTG" : {
+          "label" : "Fiber",
+          "quantity" : 32.9949138,
+          "unit" : "%"
+        },
+        "PROCNT" : {
+          "label" : "Protein",
+          "quantity" : 7.699928379999999,
+          "unit" : "%"
+        },
+        "NA" : {
+          "label" : "Sodium",
+          "quantity" : 1.3311743749999998,
+          "unit" : "%"
+        },
+        "CA" : {
+          "label" : "Calcium",
+          "quantity" : 5.268000349999999,
+          "unit" : "%"
+        },
+        "MG" : {
+          "label" : "Magnesium",
+          "quantity" : 13.245001749999998,
+          "unit" : "%"
+        },
+        "K" : {
+          "label" : "Potassium",
+          "quantity" : 19.55784692857143,
+          "unit" : "%"
+        },
+        "FE" : {
+          "label" : "Iron",
+          "quantity" : 11.409799499999998,
+          "unit" : "%"
+        },
+        "ZN" : {
+          "label" : "Zinc",
+          "quantity" : 4.115152066666666,
+          "unit" : "%"
+        },
+        "P" : {
+          "label" : "Phosphorus",
+          "quantity" : 15.243248571428568,
+          "unit" : "%"
+        },
+        "VITA_RAE" : {
+          "label" : "Vitamin A",
+          "quantity" : 12.7083855,
+          "unit" : "%"
+        },
+        "VITC" : {
+          "label" : "Vitamin C",
+          "quantity" : 161.55108441666664,
+          "unit" : "%"
+        },
+        "THIA" : {
+          "label" : "Thiamin (B1)",
+          "quantity" : 7.226061666666666,
+          "unit" : "%"
+        },
+        "RIBF" : {
+          "label" : "Riboflavin (B2)",
+          "quantity" : 10.832087058823527,
+          "unit" : "%"
+        },
+        "NIA" : {
+          "label" : "Niacin (B3)",
+          "quantity" : 16.894411525,
+          "unit" : "%"
+        },
+        "VITB6A" : {
+          "label" : "Vitamin B6",
+          "quantity" : 54.20046249999999,
+          "unit" : "%"
+        },
+        "FOL" : {
+          "label" : "Folic Acid (B9)",
+          "quantity" : 12.500456374999999,
+          "unit" : "%"
+        },
+        "TOCPHA" : {
+          "label" : "Vitamin E",
+          "quantity" : 7.580773824999999,
+          "unit" : "%"
+        },
+        "VITK1" : {
+          "label" : "Vitamin K",
+          "quantity" : 33.091822875,
+          "unit" : "%"
+        }
+      },
+      "digest" : [ {
+        "label" : "Fat",
+        "tag" : "FAT",
+        "schemaOrgTag" : "fatContent",
+        "total" : 1.00490014,
+        "hasRDI" : true,
+        "daily" : 1.5460002153846153,
+        "unit" : "g",
+        "sub" : [ {
+          "label" : "Saturated",
+          "tag" : "FASAT",
+          "schemaOrgTag" : "saturatedFatContent",
+          "total" : 0.115690925,
+          "hasRDI" : true,
+          "daily" : 0.578454625,
+          "unit" : "g"
+        }, {
+          "label" : "Trans",
+          "tag" : "FATRN",
+          "schemaOrgTag" : "transFatContent",
+          "total" : 0.0,
+          "hasRDI" : false,
+          "daily" : 0.0,
+          "unit" : "g"
+        }, {
+          "label" : "Monounsaturated",
+          "tag" : "FAMS",
+          "schemaOrgTag" : null,
+          "total" : 0.04763636999999999,
+          "hasRDI" : false,
+          "daily" : 0.0,
+          "unit" : "g"
+        }, {
+          "label" : "Polyunsaturated",
+          "tag" : "FAPU",
+          "schemaOrgTag" : null,
+          "total" : 0.5041000699999999,
+          "hasRDI" : false,
+          "daily" : 0.0,
+          "unit" : "g"
+        } ]
+      }
