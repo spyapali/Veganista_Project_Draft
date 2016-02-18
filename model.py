@@ -45,7 +45,9 @@ class Caching_Data_Recipes(db.Model):
 
     recipe_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     search_term = db.Column(db.String(64))
-    json_response = db.Column(db.String(2000))
+    percentage_of_carbs = db.Column(db.Integer)
+    percentage_of_fat = db.Column(db.Integer)
+    percentage_of_protein = db.Column(db.Integer)
 
 
 # Supplement reminders through text will be a nice-to-have feature

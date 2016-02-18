@@ -1,9 +1,60 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1>{{ recipe }}</h1>
 
-<a href='/user/ {{ user.user_id }}'>Go back to Profile Page</a>
+<h1>{{ search_term.title() }}</h1>
+
+	<div class="nutritional_data">
+    	<canvas id="doghnutChart"></canvas>
+    	<div id="doghnutLegend" class="chart-legend"></div>
+  	</div>
+
+
+  	<script> 
+  		var data = {{ data|tojson|safe }}
+  		var data = JSON.parse(data)
+  		var nutrition_data = [
+    	{
+        value: data['percentage_of_carbs'],
+        color:"#F7464A",
+        highlight: "#FF5A5E",
+        label: " % Carbohydrates"
+    	},
+    	{
+        value: data['percentage_of_protein'],
+        color: "#46BFBD",
+        highlight: "#5AD3D1",
+        label: "% Protein"
+    	},
+    	{
+        value: data['percentage_of_fat'],
+        color: "#FDB45C",
+        highlight: "#FFC870",
+        label: "% Fat"
+    	}	
+	]
+  		var options = {
+      	responsive: true
+    };
+
+    var ctx_doghnut = $("#doghnutChart").get(0).getContext("2d");
+  
+
+    var myDoughnutChart = new Chart(ctx_doghnut).Doughnut(nutrition_data, { 
+    							animateScale: true}); 
+    $('#doghnutLegend').html(myDoughnutChart.generateLegend())
+
+
+    // var ctx_donut = $("#donutChart").get(0).getContext("2d");
+
+    // function makeDonutChart(data) {
+    // 	var myDonutChart = new Chart(ctx_donut).Doughnut(data, options);
+    //   $('#donutLegend').html(myDonutChart.generateLegend());
+    // };
+
+
+
+  </script>
 
 
 {% endblock %}
