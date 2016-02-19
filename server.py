@@ -125,6 +125,7 @@ def process_input(user_id):
     input_name = input_obj.input_name
 
     flash('Your recipe has been stored.')
+    # return redirect('/recipe/input')
     return redirect(url_for('show_user_log', user_id=user_id))
 
 
@@ -147,7 +148,7 @@ def show_user_log(user_id):
 def process_recipe_info():
     """Make API call, store stuff for the ingredient."""
 
-    
+
     user_recipe = session['input_name']
     # user_recipe = request.args.get('input_name')
     user_recipe_obj = Caching_Data_Recipes.query.filter_by(search_term=user_recipe).first()
@@ -174,8 +175,6 @@ def process_recipe_info():
 
         json_recipe = json_dict['hits'][0]
         recipe = json_recipe['recipe']
-
-        print "I ain't doing what I'm supposed ta do."
 
         # grabbing serving of the recipe from json object. 
         serving = recipe['yield']
@@ -211,7 +210,7 @@ def process_recipe_info():
 
         #create a dictionary for chart.js 
         recipe_data = {}
-        recipe_data['percentage_of_fat'] = percentage_of_fat
+        recipe_data['percentage_of_fat'] = percentage_of_fats
         recipe_data['percentage_of_carbs'] = percentage_of_carbs
         recipe_data['percentage_of_protein'] = percentage_of_protein
 

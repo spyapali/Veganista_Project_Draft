@@ -11,8 +11,8 @@
 
 
   	<script> 
-  		var data = {{ data|tojson|safe }}
-  		var data = JSON.parse(data)
+  		var data = {{ data|tojson|safe }};
+  		var data = JSON.parse(data);
   		var nutrition_data = [
     	{
         value: data['percentage_of_carbs'],
@@ -32,7 +32,7 @@
         highlight: "#FFC870",
         label: "% Fat"
     	}	
-	]
+	];
   		var options = {
       	responsive: true
     };
