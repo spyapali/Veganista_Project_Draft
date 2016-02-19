@@ -1,5 +1,7 @@
 """Movie Ratings."""
 
+from __future__ import division 
+
 from jinja2 import StrictUndefined
 
 from flask import Flask, render_template, redirect, request, flash, session, json, url_for
@@ -15,6 +17,8 @@ import pprint
 from sys import argv 
 
 from datetime import datetime
+
+
 
 
 
@@ -110,33 +114,49 @@ def process_input(user_id):
     input_resp = request.args.get('input')
     input_obj = Input(user_id=user_id, eaten_at=datetime.utcnow(), input_name=input_resp)
 
+    session['input_name'] = input_resp
+
     db.session.add(input_obj)
     db.session.commit()
 
     user = User.query.get(user_id)
     firstname = user.first_name
 
+    input_name = input_obj.input_name
+
     flash('Your recipe has been stored.')
-    return redirect('/recipe')
-    # return render_template('user.html', firstname=firstname, user=user)
+    return redirect(url_for('show_user_log', user_id=user_id))
 
 
 # @app.route('/user/<int:user_id>/recipe')
 # def process_recipe(user_id):
 
 
-@app.route('/recipe', methods=['GET'])
+@app.route('/user-log/<int:user_id>/input_name')
+def show_user_log(user_id):
+    """show log of user inputs. """
+
+    user = User.query.get(user_id)
+    firstname = user.first_name
+
+
+    return render_template("user_log.html", user=user, firstname=firstname)
+
+
+@app.route('/recipe/input', methods=['GET'])
 def process_recipe_info():
     """Make API call, store stuff for the ingredient."""
 
-    user_recipe = request.args.get('input')
-    user_recipe = Caching_Data_Recipes.query.filter_by(search_term=user_recipe).first()
+    
+    user_recipe = session['input_name']
+    # user_recipe = request.args.get('input_name')
+    user_recipe_obj = Caching_Data_Recipes.query.filter_by(search_term=user_recipe).first()
 
-    if user_recipe:
-        search_term = user_recipe.search_term
-        percentage_of_fat = user_recipe.percentage_of_fat
-        percentage_of_carbs = user_recipe.percentage_of_carbs
-        percentage_of_protein = user_recipe.percentage_of_protein
+    if user_recipe_obj:
+        search_term = user_recipe_obj.search_term 
+        percentage_of_fat = user_recipe_obj.percentage_of_fat
+        percentage_of_carbs = user_recipe_obj.percentage_of_carbs
+        percentage_of_protein = user_recipe_obj.percentage_of_protein
 
         #create a dictionary for chart.js 
         recipe_data = {}
@@ -155,6 +175,8 @@ def process_recipe_info():
         json_recipe = json_dict['hits'][0]
         recipe = json_recipe['recipe']
 
+        print "I ain't doing what I'm supposed ta do."
+
         # grabbing serving of the recipe from json object. 
         serving = recipe['yield']
 
@@ -164,17 +186,20 @@ def process_recipe_info():
         # grabbing fat percentage of the recipe from the json object. 
         total_fat = recipe['totalDaily']['FAT']
         percentage_of_fat = total_fat['quantity']
-        percentage_of_fat = (float(percentage_of_fat)/float(serving))
+        percentage_of_fat = float(percentage_of_fat)/float(serving)
+        print percentage_of_fat
 
         # grabbing carbs percentage of the recipe from the json object. 
         total_carbs = recipe['totalDaily']['CHOCDF']
         percentage_of_carbs = total_carbs['quantity']
-        percentage_of_carbs = (float(percentage_of_carbs)/float(serving))
+        percentage_of_carbs = float(percentage_of_carbs)/float(serving)
+        print percentage_of_carbs
 
         # grabbing protein percentage of the recipe from the json object. 
         total_protein = recipe['totalDaily']['PROCNT']
         percentage_of_protein = total_protein['quantity']
-        percentage_of_protein = (float(percentage_of_protein)/float(serving))
+        percentage_of_protein = float(percentage_of_protein)/float(serving)
+        print percentage_of_protein
 
         # cache the data being called from the api.
 

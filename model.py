@@ -24,6 +24,9 @@ class User(db.Model):
     username = db.Column(db.String(64), nullable=False)
     password = db.Column(db.String(64), nullable=False)
 
+    # build a relationship between user and inputs 
+    
+
 class Input(db.Model):
     """Recipe User enters."""
 
@@ -45,9 +48,9 @@ class Caching_Data_Recipes(db.Model):
 
     recipe_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     search_term = db.Column(db.String(64))
-    percentage_of_carbs = db.Column(db.Integer)
-    percentage_of_fat = db.Column(db.Integer)
-    percentage_of_protein = db.Column(db.Integer)
+    percentage_of_carbs = db.Column(db.Float)
+    percentage_of_fat = db.Column(db.Float)
+    percentage_of_protein = db.Column(db.Float)
 
 
 # Supplement reminders through text will be a nice-to-have feature
