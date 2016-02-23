@@ -1,4 +1,4 @@
-"""Movie Ratings."""
+"""Veganista Project."""
 
 from __future__ import division 
 
@@ -60,6 +60,7 @@ def sign_up_process():
     db.session.add(user)
     db.session.commit()
 
+
     flash("Thanks for signing up! Please log in to continue.")
     return redirect("/login")
 
@@ -114,8 +115,6 @@ def process_input(user_id):
     input_resp = request.args.get('input')
     input_obj = Input(user_id=user_id, eaten_at=datetime.utcnow(), input_name=input_resp)
 
-    session['input_name'] = input_resp
-
     db.session.add(input_obj)
     db.session.commit()
 
@@ -143,83 +142,99 @@ def show_user_log(user_id):
 
     return render_template("user_log.html", user=user, firstname=firstname)
 
+@app.route('/show_recipes_date', methods=['GET','POST'])
+def show_recipe_date():
+    """Show recipes for each date selected"""
+#   Grab the date from the URL. 
+    date = request.args.get("date")
+    print date 
 
-@app.route('/recipe/input', methods=['GET'])
-def process_recipe_info():
+    # datetime.today() = datetime.now()
+    return "<HTML><p>This page shows recipes on a particular date.</p></HTML>"
+
+
+@app.route('/recipe/input/<input_name>', methods=['GET'])
+def process_recipe_info(input_name):
     """Make API call, store stuff for the ingredient."""
 
+    try:
+  
+        # user_recipe = request.args.get('input_name')
+        user_recipe_obj = Caching_Data_Recipes.query.filter_by(search_term=input_name).first()
 
-    user_recipe = session['input_name']
-    # user_recipe = request.args.get('input_name')
-    user_recipe_obj = Caching_Data_Recipes.query.filter_by(search_term=user_recipe).first()
+        if user_recipe_obj:
+            search_term = user_recipe_obj.search_term 
+            percentage_of_fat = user_recipe_obj.percentage_of_fat
+            percentage_of_carbs = user_recipe_obj.percentage_of_carbs
+            percentage_of_protein = user_recipe_obj.percentage_of_protein
 
-    if user_recipe_obj:
-        search_term = user_recipe_obj.search_term 
-        percentage_of_fat = user_recipe_obj.percentage_of_fat
-        percentage_of_carbs = user_recipe_obj.percentage_of_carbs
-        percentage_of_protein = user_recipe_obj.percentage_of_protein
+            #create a dictionary for chart.js 
+            recipe_data = {}
+            recipe_data['percentage_of_fat'] = percentage_of_fat
+            recipe_data['percentage_of_carbs'] = percentage_of_carbs
+            recipe_data['percentage_of_protein'] = percentage_of_protein
 
-        #create a dictionary for chart.js 
-        recipe_data = {}
-        recipe_data['percentage_of_fat'] = percentage_of_fat
-        recipe_data['percentage_of_carbs'] = percentage_of_carbs
-        recipe_data['percentage_of_protein'] = percentage_of_protein
+            recipe_data = json.dumps(recipe_data)
 
-        recipe_data = json.dumps(recipe_data)
+        # search for the term within the database. 
+        # if not there, call the api and search for the information within the api. 
+        else:
+            json_string = open(argv[1]).read()
+            json_dict = json.loads(json_string)
 
-    # search for the term within the database. 
-    # if not there, call the api and search for the information within the api. 
-    else:
-        json_string = open(argv[1]).read()
-        json_dict = json.loads(json_string)
+            json_recipe = json_dict['hits'][0]
+            recipe = json_recipe['recipe']
 
-        json_recipe = json_dict['hits'][0]
-        recipe = json_recipe['recipe']
+            # grabbing serving of the recipe from json object. 
+            serving = recipe['yield']
 
-        # grabbing serving of the recipe from json object. 
-        serving = recipe['yield']
+            # grabbing name of the recipe from json object. 
+            search_term = recipe['label'].lower()
 
-        # grabbing name of the recipe from json object. 
-        search_term = recipe['label'].lower()
+            # grabbing fat percentage of the recipe from the json object. 
+            total_fat = recipe['totalDaily']['FAT']
+            percentage_of_fat = total_fat['quantity']
+            percentage_of_fat = float(percentage_of_fat)/float(serving)
+            print percentage_of_fat
 
-        # grabbing fat percentage of the recipe from the json object. 
-        total_fat = recipe['totalDaily']['FAT']
-        percentage_of_fat = total_fat['quantity']
-        percentage_of_fat = float(percentage_of_fat)/float(serving)
-        print percentage_of_fat
+            # grabbing carbs percentage of the recipe from the json object. 
+            total_carbs = recipe['totalDaily']['CHOCDF']
+            percentage_of_carbs = total_carbs['quantity']
+            percentage_of_carbs = float(percentage_of_carbs)/float(serving)
+            print percentage_of_carbs
 
-        # grabbing carbs percentage of the recipe from the json object. 
-        total_carbs = recipe['totalDaily']['CHOCDF']
-        percentage_of_carbs = total_carbs['quantity']
-        percentage_of_carbs = float(percentage_of_carbs)/float(serving)
-        print percentage_of_carbs
+            # grabbing protein percentage of the recipe from the json object. 
+            total_protein = recipe['totalDaily']['PROCNT']
+            percentage_of_protein = total_protein['quantity']
+            percentage_of_protein = float(percentage_of_protein)/float(serving)
+            print percentage_of_protein
 
-        # grabbing protein percentage of the recipe from the json object. 
-        total_protein = recipe['totalDaily']['PROCNT']
-        percentage_of_protein = total_protein['quantity']
-        percentage_of_protein = float(percentage_of_protein)/float(serving)
-        print percentage_of_protein
+            # cache the data being called from the api.
 
-        # cache the data being called from the api.
+            stored_recipe = Caching_Data_Recipes(search_term=search_term, percentage_of_protein=percentage_of_protein,
+                                                    percentage_of_fat=percentage_of_fat, percentage_of_carbs=percentage_of_carbs)
 
-        stored_recipe = Caching_Data_Recipes(search_term=search_term, percentage_of_protein=percentage_of_protein,
-                                                percentage_of_fat=percentage_of_fat, percentage_of_carbs=percentage_of_carbs)
+            db.session.add(stored_recipe)
+            db.session.commit()
 
-        db.session.add(stored_recipe)
-        db.session.commit()
+            #create a dictionary for chart.js 
+            recipe_data = {}
+            recipe_data['percentage_of_fat'] = percentage_of_fats
+            recipe_data['percentage_of_carbs'] = percentage_of_carbs
+            recipe_data['percentage_of_protein'] = percentage_of_protein
 
-        #create a dictionary for chart.js 
-        recipe_data = {}
-        recipe_data['percentage_of_fat'] = percentage_of_fats
-        recipe_data['percentage_of_carbs'] = percentage_of_carbs
-        recipe_data['percentage_of_protein'] = percentage_of_protein
-
-        recipe_data = json.dumps(recipe_data)
+            recipe_data = json.dumps(recipe_data)
 
 
 
-    return render_template("recipe.html", search_term=search_term, percentage_of_fat=percentage_of_fat, percentage_of_carbs=percentage_of_carbs,
-                                            percentage_of_protein=percentage_of_protein, data=recipe_data)
+
+
+        return render_template("recipe.html", search_term=search_term, percentage_of_fat=percentage_of_fat, percentage_of_carbs=percentage_of_carbs,
+                                                 percentage_of_protein=percentage_of_protein, data=recipe_data)
+
+
+    except ValueError or IndexError:
+        print "<HTML><p>I'm sorry, but our database has not found your request</p></HTML>."
 
 
     # return "<HTML><body>%s</body></HTML>" %(user_recipe)
