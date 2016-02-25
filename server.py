@@ -6,6 +6,8 @@ from jinja2 import StrictUndefined
 
 from flask import Flask, render_template, redirect, request, flash, session, json, url_for
 
+import requests
+
 from flask_debugtoolbar import DebugToolbarExtension
 
 from model import connect_to_db, db, User, Input, Caching_Data_Recipes
@@ -193,8 +195,13 @@ def process_recipe_info(input_name):
   
     # user_recipe = request.args.get('input_name')
     # grab input name and query database for it. 
+    input_name_list = input_name.split()
+    
     user_recipe_obj = Caching_Data_Recipes.query.filter_by(input_name=input_name).first()
+    print "This is the user_recipe_obj: ", user_recipe_obj 
 
+    #break down input_name into a list of words and then query for whatever matches the most, and ask, did you mean this?"
+    #if user presses nope, move on to making the api call. 
     if user_recipe_obj:
         input_name = user_recipe_obj.input_name 
         percentage_of_fat = user_recipe_obj.percentage_of_fat
@@ -212,11 +219,20 @@ def process_recipe_info(input_name):
     # search for the term within the database. 
     # if not there, call the api and search for the information within the api. 
     else:
-        json_string = open(argv[1]).read()
-        json_dict = json.loads(json_string)
+        print input_name
+        input_name = str(input_name)
+        print input_name
+        json_string = requests.get("https://api.edamam.com/search?q="+input_name+"&app_id=22a5c077&app_key=9e70212d2e504688b4f44ee2651a7769&health=vegan") 
+        # import pdb; pdb.set_trace()
+        print "json_string", json_string  
+        json_dict = json_string.json() # converting this into a python dictionary.
+        print "json_dict", json_dict
+
 
         json_recipe = json_dict['hits'][5]
+        print "json_recipe", json_recipe 
         recipe = json_recipe['recipe']
+        print "recipe", recipe 
 
         # grabbing serving of the recipe from json object. 
         serving = recipe['yield']
