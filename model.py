@@ -34,24 +34,25 @@ class Input(db.Model):
 
 
     input_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+    user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"))
     eaten_at = db.Column(db.Date)
-    input_name = db.Column(db.String(64), db.ForeignKey('recipes.input_name'))
+    input_name = db.Column(db.String(64))
 
     user = db.relationship("User", backref=db.backref("inputs", order_by=input_id))
 
-    recipe = db.relationship("Caching_Data_Recipes", backref=db.backref("inputs"))
-    
+
 
 class Caching_Data_Recipes(db.Model):
     """Json responses for recipes stored when making an API call."""
 
     __tablename__ = "recipes" 
 
-    input_name = db.Column(db.String(200), primary_key=True)
+    recipe_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    input_name = db.Column(db.String(200))
     percentage_of_carbs = db.Column(db.Float)
     percentage_of_fat = db.Column(db.Float)
     percentage_of_protein = db.Column(db.Float)
+
 
 
 # Supplement reminders through text will be a nice-to-have feature

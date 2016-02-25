@@ -191,6 +191,7 @@ def process_recipe_info(input_name):
     """Make API call, store stuff for the ingredient."""
   
     # user_recipe = request.args.get('input_name')
+    # grab input name and query database for it. 
     user_recipe_obj = Caching_Data_Recipes.query.filter_by(input_name=input_name).first()
 
     if user_recipe_obj:
@@ -213,7 +214,7 @@ def process_recipe_info(input_name):
         json_string = open(argv[1]).read()
         json_dict = json.loads(json_string)
 
-        json_recipe = json_dict['hits'][0]
+        json_recipe = json_dict['hits'][5]
         recipe = json_recipe['recipe']
 
         # grabbing serving of the recipe from json object. 
