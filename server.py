@@ -174,13 +174,14 @@ def calculate_recipes():
     # Add all of them up. 
     recipe_date = request.args.get("date")
     recipe_inputs = Input.query.filter_by(eaten_at = recipe_date).all()
-    # for recipe in recipe_inputs:
-    #     recipe = Caching_Data_Recipes.query.filter_by(search_term=recipe_date.input_name)
-    #     percentage_of_fat = recipe.percentage_of_fat
-    #     percentage_of_carbs = recipe.percentage_of_carbs
-    #     percentage_of_protein = recipe.percentage_of_protein
+    print recipe_inputs
+    for recipe in recipe_inputs:
+        recipe = Caching_Data_Recipes.query.filter_by(input_name=recipe.input_name)
+        percentage_of_fat = recipe.percentage_of_fat
+        percentage_of_carbs = recipe.percentage_of_carbs
+        percentage_of_protein = recipe.percentage_of_protein
 
-    return render_template("dynamic_user_log.html", recipe_inputs=recipe_inputs)
+    return "<HTML><body>Here is my percentage of fat: %d, here is my percentage of protein: %d, and here is my percentage of carbs: %d</body></HTML>" %(percentage_of_fat, percentage_of_protein, percentage_of_carbs) 
 
     
 
