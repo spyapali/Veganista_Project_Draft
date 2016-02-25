@@ -36,9 +36,11 @@ class Input(db.Model):
     input_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     eaten_at = db.Column(db.Date)
-    input_name = db.Column(db.String(64), nullable=False)
+    input_name = db.Column(db.String(64), db.ForeignKey('recipes.input_name'))
 
     user = db.relationship("User", backref=db.backref("inputs", order_by=input_id))
+
+    recipe = db.relationship("Caching_Data_Recipes", backref=db.backref("inputs"))
     
 
 class Caching_Data_Recipes(db.Model):
@@ -46,8 +48,7 @@ class Caching_Data_Recipes(db.Model):
 
     __tablename__ = "recipes" 
 
-    recipe_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    search_term = db.Column(db.String(64))
+    input_name = db.Column(db.String(200), primary_key=True)
     percentage_of_carbs = db.Column(db.Float)
     percentage_of_fat = db.Column(db.Float)
     percentage_of_protein = db.Column(db.Float)

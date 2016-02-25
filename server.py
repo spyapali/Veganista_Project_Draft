@@ -165,15 +165,36 @@ def show_recipe_date():
     return render_template("dynamic_user_log.html", recipe_inputs=recipe_inputs, user=user, firstname=firstname)
 
 
+
+
+@app.route('/calculate-recipes/date', methods=['POST'])
+def calculate_recipes():
+    # Filter out each recipe based on input name in the Caching Database 
+    # Grab nutritional data from each recipe 
+    # Add all of them up. 
+    recipe_date = request.args.get("date")
+    recipe_inputs = Input.query.filter_by(eaten_at = recipe_date).all()
+    # for recipe in recipe_inputs:
+    #     recipe = Caching_Data_Recipes.query.filter_by(search_term=recipe_date.input_name)
+    #     percentage_of_fat = recipe.percentage_of_fat
+    #     percentage_of_carbs = recipe.percentage_of_carbs
+    #     percentage_of_protein = recipe.percentage_of_protein
+
+    return render_template("dynamic_user_log.html", recipe_inputs=recipe_inputs)
+
+    
+
+    # return "<HTML><p>I am Shalini</p></HTML>"
+
 @app.route('/recipe/input/<input_name>', methods=['GET'])
 def process_recipe_info(input_name):
     """Make API call, store stuff for the ingredient."""
   
     # user_recipe = request.args.get('input_name')
-    user_recipe_obj = Caching_Data_Recipes.query.filter_by(search_term=input_name).first()
+    user_recipe_obj = Caching_Data_Recipes.query.filter_by(input_name=input_name).first()
 
     if user_recipe_obj:
-        search_term = user_recipe_obj.search_term 
+        input_name = user_recipe_obj.input_name 
         percentage_of_fat = user_recipe_obj.percentage_of_fat
         percentage_of_carbs = user_recipe_obj.percentage_of_carbs
         percentage_of_protein = user_recipe_obj.percentage_of_protein
@@ -199,7 +220,7 @@ def process_recipe_info(input_name):
         serving = recipe['yield']
 
         # grabbing name of the recipe from json object. 
-        search_term = recipe['label'].lower()
+        input_name = recipe['label'].lower()
 
         # grabbing fat percentage of the recipe from the json object. 
         total_fat = recipe['totalDaily']['FAT']
@@ -221,7 +242,7 @@ def process_recipe_info(input_name):
 
         # cache the data being called from the api.
 
-        stored_recipe = Caching_Data_Recipes(search_term=search_term, percentage_of_protein=percentage_of_protein,
+        stored_recipe = Caching_Data_Recipes(input_name=input_name, percentage_of_protein=percentage_of_protein,
                                                 percentage_of_fat=percentage_of_fat, percentage_of_carbs=percentage_of_carbs)
 
         db.session.add(stored_recipe)
@@ -239,7 +260,7 @@ def process_recipe_info(input_name):
 
 
 
-    return render_template("recipe.html", search_term=search_term, percentage_of_fat=percentage_of_fat, percentage_of_carbs=percentage_of_carbs,
+    return render_template("recipe.html", input_name=input_name, percentage_of_fat=percentage_of_fat, percentage_of_carbs=percentage_of_carbs,
                                              percentage_of_protein=percentage_of_protein, data=recipe_data)
 
 
