@@ -113,7 +113,7 @@ def show_user_page(user_id):
 def process_input(user_id):
 
     input_resp = request.args.get('input')
-    input_obj = Input(user_id=user_id, eaten_at=datetime.utcnow(), input_name=input_resp)
+    input_obj = Input(user_id=user_id, eaten_at=date.today(), input_name=input_resp)
 
     db.session.add(input_obj)
     db.session.commit()
