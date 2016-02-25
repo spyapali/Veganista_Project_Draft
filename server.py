@@ -195,8 +195,7 @@ def process_recipe_info(input_name):
   
     # user_recipe = request.args.get('input_name')
     # grab input name and query database for it. 
-    input_name_list = input_name.split()
-    
+
     user_recipe_obj = Caching_Data_Recipes.query.filter_by(input_name=input_name).first()
     print "This is the user_recipe_obj: ", user_recipe_obj 
 
@@ -229,7 +228,7 @@ def process_recipe_info(input_name):
         print "json_dict", json_dict
 
 
-        json_recipe = json_dict['hits'][5]
+        json_recipe = json_dict['hits'][0]
         print "json_recipe", json_recipe 
         recipe = json_recipe['recipe']
         print "recipe", recipe 
