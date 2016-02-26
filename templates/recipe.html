@@ -34,13 +34,11 @@
         label: "% Fat"
       } 
   ];
-      var options = {
-        responsive: true
-    };
+    
     var ctx_doghnut = $("#doghnutChart").get(0).getContext("2d");
 
     var myDoughnutChart = new Chart(ctx_doghnut).Doughnut(nutrition_data, { 
-                  animateScale: true}); 
+                  animateScale: true, responsive: true}); 
     $('#doghnutLegend').html(myDoughnutChart.generateLegend())
     // var ctx_donut = $("#donutChart").get(0).getContext("2d");
     // function makeDonutChart(data) {
