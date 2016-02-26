@@ -38,7 +38,7 @@
         responsive: true
     };
     var ctx_doghnut = $("#doghnutChart").get(0).getContext("2d");
-  
+
     var myDoughnutChart = new Chart(ctx_doghnut).Doughnut(nutrition_data, { 
                   animateScale: true}); 
     $('#doghnutLegend').html(myDoughnutChart.generateLegend())

@@ -184,7 +184,6 @@ def calculate_recipes(recipe_date):
     print recipe_inputs
     for recipe in recipe_inputs:
         recipe = Caching_Data_Recipes.query.filter_by(input_name=recipe.input_name).first()
-        print "This is a recipe: ", recipe
         total_fat += recipe.percentage_of_fat
         total_carbs += recipe.percentage_of_carbs
         total_protein += recipe.percentage_of_protein
@@ -196,12 +195,14 @@ def calculate_recipes(recipe_date):
 
 
 
-    # recipe_totals = json.dumps(recipe_totals)
+    recipe_totals = json.dumps(recipe_totals)
 
 
 
 
-    return "<HTML><body>Here is the total fat!: %f, here are the total carbs: %f, here is the total protein!: %f</body></HTML>" %(total_fat, total_carbs, total_protein)
+    return render_template("recipes_date.html", recipe_date=recipe_date, total_fat=total_fat, total_carbs=total_carbs,
+                                             total_protein=total_protein, recipe_totals=recipe_totals)
+
 
     
 
