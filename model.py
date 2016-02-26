@@ -25,6 +25,8 @@ class User(db.Model):
     password = db.Column(db.String(64), nullable=False)
 
     # build a relationship between user and inputs 
+
+    
     
 
 class Input(db.Model):

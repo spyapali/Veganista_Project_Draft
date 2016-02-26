@@ -164,26 +164,27 @@ def show_recipe_date():
     # print resulting_inputs
 
     # datetime.today() = datetime.now()
-    return render_template("dynamic_user_log.html", recipe_inputs=recipe_inputs, user=user, firstname=firstname)
+    return render_template("dynamic_user_log.html", recipe_inputs=recipe_inputs, user=user, firstname=firstname, recipe_date=recipe_date)
 
 
 
 
-@app.route('/calculate-recipes/date', methods=['POST'])
-def calculate_recipes():
+@app.route('/calculate-recipes/<recipe_date>', methods=['GET', 'POST'])
+def calculate_recipes(recipe_date):
     # Filter out each recipe based on input name in the Caching Database 
     # Grab nutritional data from each recipe 
     # Add all of them up. 
-    recipe_date = request.args.get("date")
+    print "Here is my recipe_date: ", recipe_date
     recipe_inputs = Input.query.filter_by(eaten_at = recipe_date).all()
     print recipe_inputs
     for recipe in recipe_inputs:
-        recipe = Caching_Data_Recipes.query.filter_by(input_name=recipe.input_name)
+        recipe = Caching_Data_Recipes.query.filter_by(input_name=recipe.input_name).first()
+        print "This is a recipe: ", recipe
         percentage_of_fat = recipe.percentage_of_fat
         percentage_of_carbs = recipe.percentage_of_carbs
         percentage_of_protein = recipe.percentage_of_protein
 
-    return "<HTML><body>Here is my percentage of fat: %d, here is my percentage of protein: %d, and here is my percentage of carbs: %d</body></HTML>" %(percentage_of_fat, percentage_of_protein, percentage_of_carbs) 
+    return "<HTML><body>Rendering page</body></HTML>"
 
     
 
