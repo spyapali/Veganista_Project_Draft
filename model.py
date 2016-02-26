@@ -26,7 +26,7 @@ class User(db.Model):
 
     # build a relationship between user and inputs 
 
-    
+
     
 
 class Input(db.Model):
@@ -54,6 +54,9 @@ class Caching_Data_Recipes(db.Model):
     percentage_of_carbs = db.Column(db.Float)
     percentage_of_fat = db.Column(db.Float)
     percentage_of_protein = db.Column(db.Float)
+    # input_id = db.Column(db.Integer, db.ForeignKey)
+
+    # input_recipe = db.Relationship("Input", backref=db.backref("recipe", order_by=input_name))
 
 
 

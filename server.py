@@ -115,6 +115,7 @@ def show_user_page(user_id):
 def process_input(user_id):
 
     input_resp = request.args.get('input')
+    input_resp = input_resp.lower()
     input_obj = Input(user_id=user_id, eaten_at=date.today(), input_name=input_resp)
 
     db.session.add(input_obj)
@@ -175,20 +176,35 @@ def calculate_recipes(recipe_date):
     # Grab nutritional data from each recipe 
     # Add all of them up. 
     print "Here is my recipe_date: ", recipe_date
+    total_fat = 0 
+    total_carbs = 0 
+    total_protein = 0 
+    # Want to calculate the total percentages of fat, carbs and protein 
     recipe_inputs = Input.query.filter_by(eaten_at = recipe_date).all()
     print recipe_inputs
     for recipe in recipe_inputs:
         recipe = Caching_Data_Recipes.query.filter_by(input_name=recipe.input_name).first()
         print "This is a recipe: ", recipe
-        percentage_of_fat = recipe.percentage_of_fat
-        percentage_of_carbs = recipe.percentage_of_carbs
-        percentage_of_protein = recipe.percentage_of_protein
+        total_fat += recipe.percentage_of_fat
+        total_carbs += recipe.percentage_of_carbs
+        total_protein += recipe.percentage_of_protein
 
-    return "<HTML><body>Rendering page</body></HTML>"
+    recipe_totals = {}
+    recipe_totals['total_fat'] = total_fat
+    recipe_totals['total_carbs'] = total_carbs
+    recipe_totals['total_protein'] = total_protein
+
+
+
+    # recipe_totals = json.dumps(recipe_totals)
+
+
+
+
+    return "<HTML><body>Here is the total fat!: %f, here are the total carbs: %f, here is the total protein!: %f</body></HTML>" %(total_fat, total_carbs, total_protein)
 
     
 
-    # return "<HTML><p>I am Shalini</p></HTML>"
 
 @app.route('/recipe/input/<input_name>', methods=['GET'])
 def process_recipe_info(input_name):
@@ -198,7 +214,7 @@ def process_recipe_info(input_name):
     # grab input name and query database for it. 
 
     user_recipe_obj = Caching_Data_Recipes.query.filter_by(input_name=input_name).first()
-    print "This is the user_recipe_obj: ", user_recipe_obj 
+    # print "This is the user_recipe_obj: ", user_recipe_obj 
 
     #break down input_name into a list of words and then query for whatever matches the most, and ask, did you mean this?"
     #if user presses nope, move on to making the api call. 
