@@ -20,6 +20,7 @@ from sys import argv
 
 from datetime import datetime, date
 
+from sqlalchemy import func 
 
 
 
@@ -167,7 +168,45 @@ def show_recipe_date():
     # datetime.today() = datetime.now()
     return render_template("dynamic_user_log.html", recipe_inputs=recipe_inputs, user=user, firstname=firstname, recipe_date=recipe_date)
 
+@app.route('/calculate-recipe-totals')
+def calculate_recipe_totals():
+    # divide up the recipes based on time 
+    # calculate each total based on macronutrient in question 
+    # render an html page which allows viewers to select whether they'd like to see progress over week or month. 
+    recipe_dates = db.session.query(Input.eaten_at).group_by(Input.eaten_at).all()
+    print recipe_dates
+    date_list = []
+    for date_combo in recipe_dates:
+        date = date_combo[0]
+        date_list.append(date)
 
+    date_dictionary = {}
+    for i in range(len(date_list)):
+        date_dictionary[date_list[i]] = Input.query.filter(Input.eaten_at == date_list[i]).all()
+
+    total_percentages = {}
+    for key, value in date_dictionary.items():
+        total_fat = 0 
+        total_protein = 0 
+        total_carbs = 0 
+
+        for recipe in value:
+            recipe_obj = Caching_Data_Recipes.query.filter_by(input_name = recipe.input_name).first()
+            total_fat += recipe_obj.percentage_of_fat
+            total_protein += recipe_obj.percentage_of_protein
+            total_carbs += recipe_obj.percentage_of_carbs
+
+        total_percentages[key] = {"total fat" : total_fat, "total protein" : total_protein, "total carbs" : total_carbs}
+
+    print total_percentages 
+
+    # percentage_data = json.dumps(total_percentages)
+    # date_list_1 = json.dumps(date_list)
+
+    return "<HTML><p>YAYAYAYAYAY</p></HTML>"
+
+
+    # return render_template("recipes_date.html", date_list=date_list_1, percentage_data=percentage_data)
 
 
 @app.route('/calculate-recipes/<recipe_date>', methods=['GET', 'POST'])
@@ -206,6 +245,8 @@ def calculate_recipes(recipe_date):
 
     
 
+
+@app.route('/')
 
 @app.route('/recipe/input/<input_name>', methods=['GET'])
 def process_recipe_info(input_name):
