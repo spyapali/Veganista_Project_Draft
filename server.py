@@ -184,8 +184,11 @@ def calculate_recipe_totals():
     for i in range(len(date_list)):
         date_dictionary[date_list[i]] = Input.query.filter(Input.eaten_at == date_list[i]).all()
 
-    total_percentages = {}
-    for key, value in date_dictionary.items():
+    d_total_fat = []
+    d_total_carbs = []
+    d_total_protein = []
+
+    for value in date_dictionary.values():
         total_fat = 0 
         total_protein = 0 
         total_carbs = 0 
@@ -196,17 +199,29 @@ def calculate_recipe_totals():
             total_protein += recipe_obj.percentage_of_protein
             total_carbs += recipe_obj.percentage_of_carbs
 
-        total_percentages[key] = {"total fat" : total_fat, "total protein" : total_protein, "total carbs" : total_carbs}
+        d_total_fat.append(total_fat)
+        d_total_carbs.append(total_carbs)
+        d_total_protein.append(total_protein)
 
-    print total_percentages 
+    print d_total_fat
+    print d_total_carbs
+    print d_total_protein 
 
     # percentage_data = json.dumps(total_percentages)
-    # date_list_1 = json.dumps(date_list)
 
-    return "<HTML><p>YAYAYAYAYAY</p></HTML>"
+    new_date_list = []
+    for item in date_list:
+        item = item.strftime('%m/%d')
+        new_date_list.append(item)
+
+    d_total_fat = json.dumps(d_total_fat)
+    d_total_carbs = json.dumps(d_total_carbs)
+    d_total_protein = json.dumps(d_total_protein)
+    date_list = json.dumps(new_date_list)
+    # return "<HTML><p>YAYAYAYAYAY</p></HTML>"
 
 
-    # return render_template("recipes_date.html", date_list=date_list_1, percentage_data=percentage_data)
+    return render_template("show_progress.html", d_total_fat=d_total_fat, d_total_carbs=d_total_carbs, d_total_protein=d_total_protein, date_list=date_list)
 
 
 @app.route('/calculate-recipes/<recipe_date>', methods=['GET', 'POST'])
