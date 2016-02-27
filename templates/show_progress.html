@@ -1,0 +1,85 @@
+
+{% extends 'base.html' %}
+{% block content %}
+
+
+<h1>Progress</h1>
+
+  <div class="nutritional_data_line">
+      <canvas id="lineChart"></canvas>
+      <div id="lineLegend" class="line-legend"></div>
+   </div>
+
+
+   <script> 
+      $(function() {
+
+      var data_list = {{ date_list|safe }}
+      // var data_list = JSON.parse(data_list)
+
+      var d_total_fat = {{ d_total_fat|safe }}
+      // var d_total_fat = JSON.parse(d_total_fat)
+
+      var d_total_carbs = {{ d_total_carbs|safe }}
+      // var d_total_carbs = JSON.parse(d_total_carbs)
+
+      var d_total_protein = {{ d_total_protein|safe }}
+      // var d_total_protein = JSON.parse(d_total_protein)
+
+      var nutrition_data = { 
+      	labels: data_list,
+      	datasets: [
+      	{
+      		label: "Total Fat",
+      		fillColor: "rgba(220,220,220,0.5)",
+      		StrokeColor: "rgba(220,220,220,0.8)",
+      		pointHighlightFill: "rgba(220,220,220,0.75)",
+      		pointHighlightStroke: "rgba(220,220,220,1)",
+      		data: d_total_fat 
+
+      	},
+        {
+          label: "Total Carbs",
+          fillColor: "rgba(220,220,220,0.5)",
+          StrokeColor: "rgba(220,220,220,0.8)",
+          pointHighlightFill: "rgba(220,220,220,0.75)",
+          pointHighlightStroke: "rgba(220,220,220,1)",
+          data: d_total_carbs
+
+        }, 
+        {
+          label: "Total Protein",
+          fillColor: "rgba(220,220,220,0.5)",
+          StrokeColor: "rgba(220,220,220,0.8)",
+          pointHighlightFill: "rgba(220,220,220,0.75)",
+          pointHighlightStroke: "rgba(220,220,220,1)",
+          data: d_total_protein 
+
+        }
+
+      ]
+     };
+
+	  var options = {
+	    scaleBeginAtZero: true,
+	    animation: true,
+	    responsive: true
+	   };
+
+
+    var ctx_line = document.getElementById("lineChart").getContext("2d");
+    var myLineChart = new Chart(ctx_line).Line(nutrition_data, options);
+    // var ctx_doghnut = $("#doghnutChart").get(0).getContext("2d");
+  
+    // var myDoughnutChart = new Chart(ctx_doghnut).Doughnut(nutrition_data, { 
+    //               animateScale: true}); 
+    $('#lineLegend').html(myLineChart.generateLegend());
+    // var ctx_donut = $("#donutChart").get(0).getContext("2d");
+    // function makeDonutChart(data) {
+    //  var myDonutChart = new Chart(ctx_donut).Doughnut(data, options);
+    //   $('#donutLegend').html(myDonutChart.generateLegend());
+    // };
+	});
+  </script>
+
+{% endblock %}

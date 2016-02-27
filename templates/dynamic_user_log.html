@@ -1,0 +1,62 @@
+
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>{{ firstname }}'s Recipes Consumed on {{ recipe_date }}</h1>
+
+
+<!-- <h3>Calculated BMI: </h3>
+
+<h3> Calculated Height Requirement: </h3> 
+
+<h3> Calculated Fat Requirement: </h3>
+
+Here is your calculated BMI, and here is your calculated protein, fat and carbohydrate requirements.
+
+<h3> Calculated Carb Requirement: </h3> -->
+<!-- 
+<h4> List of Recipes: </h4>  -->
+
+
+<!-- convert bottom into a button -->
+
+<form action="/show_recipes_date/date", method='GET'> 
+	Select Date:
+		<input type="date" name="date" id="date">
+		<input type="submit">
+</form>
+	
+
+ 	<h2>Recipes</h2>
+ 	<ul>
+ 		{% for input in recipe_inputs %}
+ 			<li>
+ 				<a id="link" href= "/recipe/input/{{ input.input_name }}">
+ 					{{ input.input_name.title() }}     
+ 				</a>
+ 			</li>
+ 		{% endfor %}
+ 	</ul>
+
+
+<form action="/calculate-recipes/{{ recipe_date }}", method='GET'>
+	<input type="submit" value="show chart">
+</form>
+
+
+<form action="/user-log/{{ user.user_id }}/input_name", method='GET'>
+	<input type="submit" value="user log">
+</form>
+
+
+
+<form action='/logout'>
+	<input type="submit" value="log out">
+</form>
+
+
+ 
+
+
+
+{% endblock %}
