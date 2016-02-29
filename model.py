@@ -65,17 +65,18 @@ class Input(db.Model):
     __tablename__ = "inputs"
 
 
-    input_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    # input_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    input_name = db.Column(db.String(200), primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"))
     eaten_at = db.Column(db.Date)
-    input_name = db.Column(db.String(64))
+    
 
-    user = db.relationship("User", backref=db.backref("inputs", order_by=input_id))
+    user = db.relationship("User", backref=db.backref("inputs", order_by=input_name))
 
     def __repr__(self):
         """Provide helpful representation when printed."""
 
-        return "<Input input_id=%d input_name=%s>" % (self.input_id, self.input_name)
+        return "<Input input_name=%s>" % (self.input_name)
 
 
 
@@ -85,13 +86,13 @@ class Recipe(db.Model):
     __tablename__ = "recipes"
 
     recipe_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    input_name = db.Column(db.String(200))
+    input_name = db.Column(db.String(200), db.ForeignKey("inputs.input_name"))
     percentage_of_carbs = db.Column(db.Float)
     percentage_of_fat = db.Column(db.Float)
     percentage_of_protein = db.Column(db.Float)
     # input_id = db.Column(db.Integer, db.ForeignKey)
 
-    # input_recipe = db.Relationship("Input", backref=db.backref("recipe", order_by=input_name))
+    inputs = db.relationship("Input", backref=db.backref("recipe", order_by=input_name))
 
     def __repr__(self):
         """Provide helpful representation when printed."""
@@ -135,3 +136,4 @@ if __name__ == "__main__":
     connect_to_db(app)
     db.create_all()
     print "Connected to DB."
+    

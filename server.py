@@ -323,7 +323,7 @@ def process_recipe_info(input_name):
         serving = recipe['yield']
 
         # grabbing name of the recipe from json object. 
-        input_name = recipe['label'].lower()
+        recipe_name = recipe['label'].lower()
 
         # grabbing fat percentage of the recipe from the json object. 
         total_fat = recipe['totalDaily']['FAT']
