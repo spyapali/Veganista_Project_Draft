@@ -10,7 +10,7 @@ import requests
 
 from flask_debugtoolbar import DebugToolbarExtension
 
-from model import connect_to_db, db, User, Input, Caching_Data_Recipes
+from model import connect_to_db, db, User, User_Stats, Input, Recipe 
 
 import json 
 
@@ -64,8 +64,14 @@ def sign_up_process():
     db.session.commit()
 
 
-    flash("Thanks for signing up! Please login to continue.")
+    flash("Thanks for signing up! Please fill out more information below.")
     return redirect("/login")
+
+# @app.route('/user-stats'):
+#     """User logs in information about their height, weight, age, and gender"""
+
+#     return render_template ("user_stats.html")
+    
 
 
 @app.route('/login')
@@ -194,7 +200,7 @@ def calculate_recipe_totals():
         total_carbs = 0 
 
         for recipe in value:
-            recipe_obj = Caching_Data_Recipes.query.filter_by(input_name = recipe.input_name).first()
+            recipe_obj = Recipe.query.filter_by(input_name = recipe.input_name).first()
             total_fat += recipe_obj.percentage_of_fat
             total_protein += recipe_obj.percentage_of_protein
             total_carbs += recipe_obj.percentage_of_carbs
@@ -237,14 +243,17 @@ def calculate_recipes(recipe_date):
     recipe_inputs = Input.query.filter_by(eaten_at = recipe_date).all()
     print recipe_inputs
     for recipe in recipe_inputs:
-        recipe = Caching_Data_Recipes.query.filter_by(input_name=recipe.input_name).first()
+        recipe = Recipe.query.filter_by(input_name=recipe.input_name).first()
         total_fat += recipe.percentage_of_fat
         total_carbs += recipe.percentage_of_carbs
         total_protein += recipe.percentage_of_protein
 
     recipe_totals = {}
+    total_fat = "{0:.2f}".format(total_fat)
     recipe_totals['total_fat'] = total_fat
+    total_carbs = "{0:.2f}".format(total_carbs)
     recipe_totals['total_carbs'] = total_carbs
+    total_protein = "{0:.2f}".format(total_protein)
     recipe_totals['total_protein'] = total_protein
 
 
@@ -270,7 +279,7 @@ def process_recipe_info(input_name):
     # user_recipe = request.args.get('input_name')
     # grab input name and query database for it. 
 
-    user_recipe_obj = Caching_Data_Recipes.query.filter_by(input_name=input_name).first()
+    user_recipe_obj = Recipe.query.filter_by(input_name=input_name).first()
     # print "This is the user_recipe_obj: ", user_recipe_obj 
 
     #break down input_name into a list of words and then query for whatever matches the most, and ask, did you mean this?"
@@ -283,8 +292,11 @@ def process_recipe_info(input_name):
 
         #create a dictionary for chart.js 
         recipe_data = {}
+        percentage_of_fat = "{0:.2f}".format(percentage_of_fat)
         recipe_data['percentage_of_fat'] = percentage_of_fat
+        percentage_of_carbs = "{0:.2f}".format(percentage_of_carbs)
         recipe_data['percentage_of_carbs'] = percentage_of_carbs
+        percentage_of_protein = "{0:.2f}".format(percentage_of_protein)
         recipe_data['percentage_of_protein'] = percentage_of_protein
 
         recipe_data = json.dumps(recipe_data)
@@ -333,7 +345,7 @@ def process_recipe_info(input_name):
 
         # cache the data being called from the api.
 
-        stored_recipe = Caching_Data_Recipes(input_name=input_name, percentage_of_protein=percentage_of_protein,
+        stored_recipe = Recipe(input_name=input_name, percentage_of_protein=percentage_of_protein,
                                                 percentage_of_fat=percentage_of_fat, percentage_of_carbs=percentage_of_carbs)
 
         db.session.add(stored_recipe)
@@ -341,8 +353,11 @@ def process_recipe_info(input_name):
 
         #create a dictionary for chart.js 
         recipe_data = {}
+        percentage_of_fat = "{0:.2f}".format(percentage_of_fat)
         recipe_data['percentage_of_fat'] = percentage_of_fat
+        percentage_of_carbs = "{0:.2f}".format(percentage_of_carbs)
         recipe_data['percentage_of_carbs'] = percentage_of_carbs
+        percentage_of_protein = "{0:.2f}".format(percentage_of_protein)
         recipe_data['percentage_of_protein'] = percentage_of_protein
 
         recipe_data = json.dumps(recipe_data)

@@ -23,11 +23,41 @@ class User(db.Model):
     last_name = db.Column(db.String(64), nullable=False)
     username = db.Column(db.String(64), nullable=False)
     password = db.Column(db.String(64), nullable=False)
+   
+    # build a relationship between user and inputs
 
-    # build a relationship between user and inputs 
+    def __repr__(self):
+        """Provide helpful representation when printed."""
+
+        return "<User user_id=%d username=%s>" % (self.user_id, self.username)
 
 
-    
+
+
+class User_Stats(db.Model):
+    """User Stats including their weight, height, activity level, gender and age"""
+
+    __tablename__ = "stats"
+
+    # a new table that takes into account user status. 
+
+    stats_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    height = db.Column(db.Integer)
+    weight = db.Column(db.Integer)
+    activity_level = db.Column(db.String(64))
+    gender = db.Column(db.String(64))
+    age = db.Column(db.Integer)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"))
+
+    user = db.relationship("User", backref=db.backref("stats", order_by=stats_id))
+
+
+    def __repr__(self):
+        """Provide helpful representation when printed."""
+
+        return "<User_Stats stats_id=%d username=%s>" % (self.stats_id, self.user.username)
+
+
 
 class Input(db.Model):
     """Recipe User enters."""
@@ -42,12 +72,17 @@ class Input(db.Model):
 
     user = db.relationship("User", backref=db.backref("inputs", order_by=input_id))
 
+    def __repr__(self):
+        """Provide helpful representation when printed."""
+
+        return "<Input input_id=%d input_name=%s>" % (self.input_id, self.input_name)
 
 
-class Caching_Data_Recipes(db.Model):
+
+class Recipe(db.Model):
     """Json responses for recipes stored when making an API call."""
 
-    __tablename__ = "recipes" 
+    __tablename__ = "recipes"
 
     recipe_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     input_name = db.Column(db.String(200))
@@ -57,6 +92,11 @@ class Caching_Data_Recipes(db.Model):
     # input_id = db.Column(db.Integer, db.ForeignKey)
 
     # input_recipe = db.Relationship("Input", backref=db.backref("recipe", order_by=input_name))
+
+    def __repr__(self):
+        """Provide helpful representation when printed."""
+
+        return "<Recipe recipe_id=%d input_name=%s>" % (self.recipe_id, self.input_name)
 
 
 
