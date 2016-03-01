@@ -6,8 +6,8 @@
 <h1>{{ input_name.title() }}</h1>
 
   <div class="nutritional_data">
-      <canvas id="doghnutChart"></canvas>
-      <div id="doghnutLegend" class="chart-legend"></div>
+      <canvas id="polarAreaChart"></canvas>
+      <div id="polarLegend" class="polar-legend"></div>
     </div>
 
 
@@ -35,11 +35,11 @@
       } 
   ];
     
-    var ctx_doghnut = $("#doghnutChart").get(0).getContext("2d");
+    var ctx_polar_area = $("#polarAreaChart").get(0).getContext("2d");
 
-    var myDoughnutChart = new Chart(ctx_doghnut).Doughnut(nutrition_data, { 
+    var myPolarAreaChart = new Chart(ctx_polar_area).PolarArea(nutrition_data, { 
                   animateScale: true, responsive: true}); 
-    $('#doghnutLegend').html(myDoughnutChart.generateLegend())
+    $('#polarLegend').html(myPolarAreaChart.generateLegend())
     // var ctx_donut = $("#donutChart").get(0).getContext("2d");
     // function makeDonutChart(data) {
     //  var myDonutChart = new Chart(ctx_donut).Doughnut(data, options);

@@ -25,7 +25,8 @@ class User(db.Model):
     password = db.Column(db.String(64), nullable=False)
    
     # build a relationship between user and inputs
-
+    # type ahead JQUERY. 
+    # APPLY EARLIER THAN LATER (HAVE IT IN OUR SYSTEM), APPLY TO THE WEBSITE. 
     def __repr__(self):
         """Provide helpful representation when printed."""
 
