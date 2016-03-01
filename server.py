@@ -205,6 +205,10 @@ def calculate_recipe_totals():
             total_protein += recipe_obj.percentage_of_protein
             total_carbs += recipe_obj.percentage_of_carbs
 
+
+        total_fat = "{0:.2f}".format(total_fat)
+        total_carbs = "{0:.2f}".format(total_carbs)
+        total_protein = "{0:.2f}".format(total_protein)
         d_total_fat.append(total_fat)
         d_total_carbs.append(total_carbs)
         d_total_protein.append(total_protein)
@@ -217,7 +221,7 @@ def calculate_recipe_totals():
 
     new_date_list = []
     for item in date_list:
-        item = item.strftime('%m/%d')
+        item = item.strftime('%m/%d') 
         new_date_list.append(item)
 
     d_total_fat = json.dumps(d_total_fat)
@@ -307,14 +311,16 @@ def process_recipe_info(input_name):
         print input_name
         input_name = str(input_name)
         print input_name
-        json_string = requests.get("https://api.edamam.com/search?q="+input_name+"&app_id=22a5c077&app_key=9e70212d2e504688b4f44ee2651a7769&health=vegan") 
+        json_string = open(argv[1]).read()
+        json_dict = json.loads(json_string)
+        # json_string = requests.get("https://api.edamam.com/search?q="+input_name+"&app_id=22a5c077&app_key=9e70212d2e504688b4f44ee2651a7769&health=vegan") 
         # import pdb; pdb.set_trace()
         print "json_string", json_string  
         json_dict = json_string.json() # converting this into a python dictionary.
         print "json_dict", json_dict
 
 
-        json_recipe = json_dict['hits'][0]
+        json_recipe = json_dict['hits'][1]
         print "json_recipe", json_recipe 
         recipe = json_recipe['recipe']
         print "recipe", recipe 
@@ -345,7 +351,7 @@ def process_recipe_info(input_name):
 
         # cache the data being called from the api.
 
-        stored_recipe = Recipe(input_name=input_name, percentage_of_protein=percentage_of_protein,
+        stored_recipe = Recipe(input_name=recipe_name, percentage_of_protein=percentage_of_protein,
                                                 percentage_of_fat=percentage_of_fat, percentage_of_carbs=percentage_of_carbs)
 
         db.session.add(stored_recipe)
