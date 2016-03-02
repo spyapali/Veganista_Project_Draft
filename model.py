@@ -66,7 +66,7 @@ class Input(db.Model):
     __tablename__ = "inputs"
 
 
-    # input_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    input_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     input_name = db.Column(db.String(200), primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"))
     eaten_at = db.Column(db.Date)
@@ -93,7 +93,7 @@ class Recipe(db.Model):
     percentage_of_protein = db.Column(db.Float)
     # input_id = db.Column(db.Integer, db.ForeignKey)
 
-    inputs = db.relationship("Input", backref=db.backref("recipe", order_by=input_name))
+    # inputs = db.relationship("Input", backref=db.backref("recipe", order_by=input_name))
 
     def __repr__(self):
         """Provide helpful representation when printed."""
