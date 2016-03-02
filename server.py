@@ -25,7 +25,7 @@ from sqlalchemy import func
 
 
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 
 # Required to use Flask sessions and the debug toolbar
 app.secret_key = "ABC"
@@ -118,6 +118,29 @@ def show_user_page(user_id):
     return render_template('user.html', firstname=firstname, user=user)
 
 
+@app.route("/user/ajaxautocomplete", methods=['GET', 'POST'])
+def ajaxautocomplete():
+    result = ""
+    if request.method == 'POST':
+        query = request.form['query']
+
+        try:
+            input_names = []
+            result = Recipe.query.filter(Recipe.input_name.like('%' + query + '%')).all()
+            for r in result:
+
+                input_name = r.input_name
+                input_names.append(input_name)
+            print result
+        finally:               
+            a = 2
+        return json.dumps({"suggestions": input_names})
+    else:
+        return "oops"
+
+# create a route that grabs the input from the HTML document.
+
+
 @app.route('/user/<int:user_id>/input', methods=['GET', 'POST'])
 def process_input(user_id):
 
@@ -173,6 +196,7 @@ def show_recipe_date():
 
     # datetime.today() = datetime.now()
     return render_template("dynamic_user_log.html", recipe_inputs=recipe_inputs, user=user, firstname=firstname, recipe_date=recipe_date)
+
 
 @app.route('/calculate-recipe-totals')
 def calculate_recipe_totals():
@@ -273,8 +297,6 @@ def calculate_recipes(recipe_date):
 
     
 
-
-@app.route('/')
 
 @app.route('/recipe/input/<input_name>', methods=['GET'])
 def process_recipe_info(input_name):
