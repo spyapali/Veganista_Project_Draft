@@ -205,22 +205,27 @@ def calculate_recipe_totals():
     # divide up the recipes based on time 
     # calculate each total based on macronutrient in question 
     # render an html page which allows viewers to select whether they'd like to see progress over week or month. 
+
+      # divide up the recipes based on time 
+      # calculate each total based on macronutrient in question 
+      # render an html page which allows viewers to select whether they'd like to see progress over week or month. 
     recipe_dates = db.session.query(Input.eaten_at).group_by(Input.eaten_at).all()
     print recipe_dates
     date_list = []
     for date_combo in recipe_dates:
-        date = date_combo[0]
-        date_list.append(date)
+      date = date_combo[0]
+      date_list.append(date)
+
+    date_list.sort()
+
+    print "Here is date_list: ", date_list 
 
     date_dictionary = {}
     for i in range(len(date_list)):
-        date_dictionary[date_list[i]] = Input.query.filter(Input.eaten_at == date_list[i]).all()
+      date_dictionary[date_list[i]] = Input.query.filter(Input.eaten_at == date_list[i]).all()
 
-    d_total_fat = []
-    d_total_carbs = []
-    d_total_protein = []
-
-    for value in date_dictionary.values():
+    total_percentages = {}
+    for key, value in date_dictionary.items():
         total_fat = 0 
         total_protein = 0 
         total_carbs = 0 
@@ -231,33 +236,27 @@ def calculate_recipe_totals():
             total_protein += recipe_obj.percentage_of_protein
             total_carbs += recipe_obj.percentage_of_carbs
 
+        total_percentages[key] = {"total fat" : total_fat, "total protein" : total_protein, "total carbs" : total_carbs}
 
-        total_fat = "{0:.2f}".format(total_fat)
-        total_carbs = "{0:.2f}".format(total_carbs)
-        total_protein = "{0:.2f}".format(total_protein)
-        d_total_fat.append(total_fat)
-        d_total_carbs.append(total_carbs)
-        d_total_protein.append(total_protein)
-
-    print d_total_fat
-    print d_total_carbs
-    print d_total_protein 
-
-    # percentage_data = json.dumps(total_percentages)
+    print "Here are total percentages: ", total_percentages
 
     new_date_list = []
     for item in date_list:
-        item = item.strftime('%m/%d') 
+        item = item.strftime('%m/%d')
         new_date_list.append(item)
 
-    d_total_fat = json.dumps(d_total_fat)
-    d_total_carbs = json.dumps(d_total_carbs)
-    d_total_protein = json.dumps(d_total_protein)
+    total_fat = {}
+    total_carbs = {}
+    total_protein = {}
+
+
+    total_percentages = json.dumps("total_percentages")
     date_list = json.dumps(new_date_list)
-    # return "<HTML><p>YAYAYAYAYAY</p></HTML>"
 
 
-    return render_template("show_progress.html", d_total_fat=d_total_fat, d_total_carbs=d_total_carbs, d_total_protein=d_total_protein, date_list=date_list)
+    return render_template("show_progress.html", date_list=date_list, total_percentages=total_percentages)
+
+
 
 
 @app.route('/calculate-recipes/<recipe_date>', methods=['GET', 'POST'])
