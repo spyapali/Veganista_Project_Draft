@@ -145,6 +145,8 @@ def ajaxautocomplete():
 def process_input(user_id):
 
     input_resp = request.args.get('input')
+    if input_resp == None:
+        return redirect("/error")
     input_resp = input_resp.lower()
     input_obj = Input(user_id=user_id, eaten_at=date.today(), input_name=input_resp)
 
