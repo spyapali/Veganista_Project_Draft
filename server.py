@@ -145,8 +145,6 @@ def ajaxautocomplete():
 def process_input(user_id):
 
     input_resp = request.args.get('input')
-    if input_resp == None:
-        return redirect("/error")
     input_resp = input_resp.lower()
     input_obj = Input(user_id=user_id, eaten_at=date.today(), input_name=input_resp)
 
@@ -332,6 +330,7 @@ def process_recipe_info(input_name):
 
 
     user_recipe_obj = Recipe.query.filter_by(input_name=input_name).first()
+    print user_recipe_obj
     # print "This is the user_recipe_obj: ", user_recipe_obj 
 
     #break down input_name into a list of words and then query for whatever matches the most, and ask, did you mean this?"
@@ -350,6 +349,8 @@ def process_recipe_info(input_name):
         recipe_data['percentage_of_carbs'] = percentage_of_carbs
         percentage_of_protein = "{0:.2f}".format(percentage_of_protein)
         recipe_data['percentage_of_protein'] = percentage_of_protein
+
+        print recipe_data
 
         recipe_data = json.dumps(recipe_data)
 
@@ -403,7 +404,7 @@ def process_recipe_info(input_name):
             # cache the data being called from the api.
 
             stored_recipe = Recipe(input_name=recipe_name, percentage_of_protein=percentage_of_protein,
-                                                    percentage_of_fat=percentage_of_fat, percentage_of_carbs=percentage_of_carbs)
+                                                percentage_of_fat=percentage_of_fat, percentage_of_carbs=percentage_of_carbs)
 
             db.session.add(stored_recipe)
             db.session.commit()
@@ -420,15 +421,15 @@ def process_recipe_info(input_name):
             recipe_data = json.dumps(recipe_data)
 
 
-
-
-            return render_template("recipe.html", input_name=input_name, percentage_of_fat=percentage_of_fat, percentage_of_carbs=percentage_of_carbs,
-                                                 percentage_of_protein=percentage_of_protein, data=recipe_data)
-
         else:
             flash ("Oops...")
             return redirect('/error')
-   
+
+
+
+    return render_template("recipe.html", input_name=input_name, percentage_of_fat=percentage_of_fat, percentage_of_carbs=percentage_of_carbs,
+                                             percentage_of_protein=percentage_of_protein, data=recipe_data)
+
 
 
 
