@@ -22,8 +22,8 @@ Here is your calculated BMI, and here is your calculated protein, fat and carboh
 
 <form action='/user/{{ user.user_id }}/input', method=['GET']>
 <div class = "container">
-	<label>Recipe Log: 
- 		<input type="text" name="input" id="autocomplete" class="form-control" placeholder="Enter Recipe Name" />
+	<label>Please enter name of dish: 
+ 		<input type="text" name="input" id="autocomplete" class="form-control" placeholder="Enter Dish Name" />
  	</label><br><br>
  	</div>
  	<div id="selection" class="required"></div>
@@ -61,7 +61,7 @@ $(document).ready(function(){
 
 
  <form action='/user-log/{{ user.user_id }}/input_name'>
-	<input type="submit" value="view user log">
+	<input type="submit" value="view food log">
 </form>
 
 
