@@ -12,19 +12,37 @@
 
 
    <script> 
+    "use strict";;
       $(function() {
 
       var data_list = {{ date_list|safe }}
       // var data_list = JSON.parse(data_list)
 
-      var date_dictionary = {{ total_percentages|tojson|safe }}
-      var data = JSON.parse(date_dictionary);
+      var d_total_fat = {{ d_total_fat|safe }}
+      // // var d_total_fat = JSON.parse(d_total_fat)
 
-    // for loop
-    // var total_fat = []
-    // var total_carbs = []
-    // var total_protein = []
-    // for date in data_list:
+      var d_total_carbs = {{ d_total_carbs|safe }}
+      // // var d_total_carbs = JSON.parse(d_total_carbs)
+
+      var d_total_protein = {{ d_total_protein|safe }}
+      // // var d_total_protein = JSON.parse(d_total_protein)
+
+      // var date_dictionary = {{ total_percentages|tojson|safe }}
+      // var data = JSON.parse(date_dictionary);
+
+      // Here are total percentages:  {'03/02': {'total protein': 3.95094, 'total carbs': 10.498035, 'total fat': 1.82958461538461}, '03/01': {'total protein': 120.12195193374998, 'total carbs': 122.32023179391669, 'total fat': 235.30183850480785}, '02/29': {'total protein': 63.087606135, 'total carbs': 68.926203521675, 'total fat': 87.21399872334617}}
+
+      // var total_fat = [];
+      // var total_carbs = [];
+      // var total_protein = [];
+
+      // for (var i in data) {
+      //     total_fat.push(data[i]["total_fat"])
+      //     total_carbs.push(data[i]["total_carbs"])
+      //     total_protein.push(data[i]["total_protein"])
+
+      // }
+
     //    total_fat.append(data[date]["total_fat"])
     //    total_carbs.append(data[date]["total_carbs"])
     //    total_protein.append(data[date]["total_protein"])
@@ -32,7 +50,7 @@
 
    
 
-      var nutrition_data = { 
+      var nutrition_data = {  
       	labels: data_list,
       	datasets: [
       	{
@@ -41,7 +59,7 @@
       		StrokeColor: "rgba(253,180,092,0.8)",
       		pointHighlightFill: "rgba(253,180,092,0.75)",
       		pointHighlightStroke: "rgba(253,180,092,1)",
-      		data: data[0]["total_fat"]
+      		data: d_total_fat
 
       	},
         {
@@ -50,7 +68,7 @@
           StrokeColor: "rgba(247,070,074,0.8)",
           pointHighlightFill: "rgba(247,070,074,0.75)",
           pointHighlightStroke: "rgba(247,070,074,1)",
-          data: data[1]["total_carbs"]
+          data: d_total_carbs
 
         }, 
         {
@@ -59,7 +77,7 @@
           StrokeColor: "rgba(070,191,189,0.8)",
           pointHighlightFill: "rgba(070,191,189,0.75)",
           pointHighlightStroke: "rgba(070,191,189,1)",
-          data: data[2]["total_protein"]
+          data: d_total_protein
 
         }
 

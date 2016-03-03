@@ -218,7 +218,13 @@ def calculate_recipe_totals():
 
     date_list.sort()
 
+    new_date_list = []
+    for item in date_list:
+        item = item.strftime('%m/%d')
+        new_date_list.append(item)
+
     print "Here is date_list: ", date_list 
+    print "Here is my new date_list: ", new_date_list
 
     date_dictionary = {}
     for i in range(len(date_list)):
@@ -230,31 +236,40 @@ def calculate_recipe_totals():
         total_protein = 0 
         total_carbs = 0 
 
+
         for recipe in value:
             recipe_obj = Recipe.query.filter_by(input_name = recipe.input_name).first()
             total_fat += recipe_obj.percentage_of_fat
             total_protein += recipe_obj.percentage_of_protein
             total_carbs += recipe_obj.percentage_of_carbs
 
-        total_percentages[key] = {"total fat" : total_fat, "total protein" : total_protein, "total carbs" : total_carbs}
+        key = key.strftime('%m/%d')
 
+        total_percentages[key] = {"total fat" : total_fat, "total protein" : total_protein, "total carbs" : total_carbs}
+    
     print "Here are total percentages: ", total_percentages
 
-    new_date_list = []
-    for item in date_list:
-        item = item.strftime('%m/%d')
-        new_date_list.append(item)
+    d_total_fat = []
+    d_total_carbs = []
+    d_total_protein = []
+    new_total_percentages = {}
 
-    total_fat = {}
-    total_carbs = {}
-    total_protein = {}
+    for i in new_date_list:
+        d_total_fat.append(total_percentages[i]["total fat"])
+        d_total_carbs.append(total_percentages[i]["total carbs"])
+        d_total_protein.append(total_percentages[i]["total protein"])
+     
+
+    print "here is total_fat: ", d_total_fat
+    print "here is total_carbs: ",d_total_carbs
+    print "here is total_protein: ", d_total_protein
 
 
     total_percentages = json.dumps("total_percentages")
     date_list = json.dumps(new_date_list)
 
 
-    return render_template("show_progress.html", date_list=date_list, total_percentages=total_percentages)
+    return render_template("show_progress.html", date_list=date_list, total_percentages=total_percentages, d_total_fat=d_total_fat, d_total_carbs=d_total_carbs, d_total_protein=d_total_protein)
 
 
 
