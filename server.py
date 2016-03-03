@@ -244,6 +244,10 @@ def calculate_recipe_totals():
             total_carbs += recipe_obj.percentage_of_carbs
 
         key = key.strftime('%m/%d')
+        total_fat = "{0:.2f}".format(total_fat)
+        total_carbs = "{0:.2f}".format(total_carbs)
+        total_protein = "{0:.2f}".format(total_protein)
+
 
         total_percentages[key] = {"total fat" : total_fat, "total protein" : total_protein, "total carbs" : total_carbs}
     
