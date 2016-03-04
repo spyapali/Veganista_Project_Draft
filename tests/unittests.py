@@ -1,5 +1,7 @@
 from unittest import TestCase
 from server import app
+from datetime import datetime 
+from model import connect_to_db, User, Input, Recipe
 
 class FlaskTests(TestCase):
 
@@ -13,4 +15,5 @@ class FlaskTests(TestCase):
       """Some non-database test..."""
 
       result = self.client.get("/process-login")
-	
+
+

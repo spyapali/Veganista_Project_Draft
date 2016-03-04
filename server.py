@@ -66,11 +66,6 @@ def sign_up_process():
 
     flash("Thanks for signing up! Please fill out more information below.")
     return redirect("/login")
-
-# @app.route('/user-stats'):
-#     """User logs in information about their height, weight, age, and gender"""
-
-#     return render_template ("user_stats.html")
     
 
 
@@ -110,8 +105,9 @@ def show_user_page(user_id):
     """User homepage."""
     # To-do: Store e-mail and password in user data table. 
     user = User.query.get(user_id)
+
+    #grab the first name of the user object. 
     firstname = user.first_name
-    # creating a user object.
 
     
 
@@ -138,8 +134,6 @@ def ajaxautocomplete():
     else:
         return "oops"
 
-# create a route that grabs the input from the HTML document.
-
 
 @app.route('/user/<int:user_id>/input', methods=['GET', 'POST'])
 def process_input(user_id):
@@ -157,12 +151,7 @@ def process_input(user_id):
     input_name = input_obj.input_name
 
     flash('Your recipe has been stored.')
-    # return redirect('/recipe/input')
     return redirect(url_for('show_user_log', user_id=user_id))
-
-
-# @app.route('/user/<int:user_id>/recipe')
-# def process_recipe(user_id):
 
 
 @app.route('/user-log/<int:user_id>/input_name')
@@ -172,30 +161,40 @@ def show_user_log(user_id):
     user = User.query.get(user_id)
     firstname = user.first_name
 
-
     return render_template("user_log.html", user=user, firstname=firstname)
 
-@app.route('/show_recipes_date/date', methods=['GET','POST'])
-def show_recipe_date():
+
+@app.route('/dish-directory/<int:user_id>')
+def show_dishes_directory(user_id):
+    """Show dishes directory page"""
+    user = User.query.get(user_id)
+    firstname = user.first_name
+    input_names_list = []
+    input_names = db.session.query(Input.input_name).group_by(Input.input_name).all()
+    for input_combo in input_names:
+        input_name1 = input_combo[0]
+        input_names_list.append(input_name1)
+
+    input_names_list = sorted(input_names_list)
+
+
+    return render_template("dishes_directory.html", input_names_list=input_names_list, user=user, firstname=firstname)
+
+@app.route('/show_recipes_date/date/<int:user_id>', methods=['GET','POST'])
+def show_recipe_date(user_id):
     """Show recipes for each date selected"""
 #   Grab the date from the URL. 
     recipe_date = request.args.get("date") # A unicode string. 
-    # 2016-02-18
     recipe_date = datetime.strptime(recipe_date, "%Y-%m-%d") # coverted into datetime object. 
     recipe_date = recipe_date.date()
     recipe_inputs = Input.query.filter_by(eaten_at = recipe_date).all()
-    user_id = session['user_id']
+    new_recipe_date = recipe_date.strftime('%m/%d')
     user = User.query.get(user_id)
     firstname = user.first_name
 
      
 
-    # resulting_inputs = Input.query.filter_by(eaten_at.date=date)
-
-    # print resulting_inputs
-
-    # datetime.today() = datetime.now()
-    return render_template("dynamic_user_log.html", recipe_inputs=recipe_inputs, user=user, firstname=firstname, recipe_date=recipe_date)
+    return render_template("dynamic_user_log.html", recipe_inputs=recipe_inputs, user=user, firstname=firstname, new_recipe_date=new_recipe_date, recipe_date=recipe_date)
 
 
 @app.route('/calculate-recipe-totals')
@@ -206,9 +205,9 @@ def calculate_recipe_totals():
 
       # divide up the recipes based on time 
       # calculate each total based on macronutrient in question 
-      # render an html page which allows viewers to select whether they'd like to see progress over week or month. 
+
     recipe_dates = db.session.query(Input.eaten_at).group_by(Input.eaten_at).all()
-    print recipe_dates
+ 
     date_list = []
     for date_combo in recipe_dates:
       date = date_combo[0]
@@ -220,9 +219,6 @@ def calculate_recipe_totals():
     for item in date_list:
         item = item.strftime('%m/%d')
         new_date_list.append(item)
-
-    print "Here is date_list: ", date_list 
-    print "Here is my new date_list: ", new_date_list
 
     date_dictionary = {}
     for i in range(len(date_list)):
@@ -249,7 +245,6 @@ def calculate_recipe_totals():
 
         total_percentages[key] = {"total fat" : total_fat, "total protein" : total_protein, "total carbs" : total_carbs}
     
-    print "Here are total percentages: ", total_percentages
 
     d_total_fat = []
     d_total_carbs = []
@@ -260,11 +255,6 @@ def calculate_recipe_totals():
         d_total_fat.append(total_percentages[i]["total fat"])
         d_total_carbs.append(total_percentages[i]["total carbs"])
         d_total_protein.append(total_percentages[i]["total protein"])
-     
-
-    print "here is total_fat: ", d_total_fat
-    print "here is total_carbs: ",d_total_carbs
-    print "here is total_protein: ", d_total_protein
 
 
     total_percentages = json.dumps("total_percentages")
@@ -281,13 +271,13 @@ def calculate_recipes(recipe_date):
     # Filter out each recipe based on input name in the Caching Database 
     # Grab nutritional data from each recipe 
     # Add all of them up. 
-    print "Here is my recipe_date: ", recipe_date
+  
     total_fat = 0 
     total_carbs = 0 
     total_protein = 0 
     # Want to calculate the total percentages of fat, carbs and protein 
     recipe_inputs = Input.query.filter_by(eaten_at = recipe_date).all()
-    print recipe_inputs
+
     for recipe in recipe_inputs:
         recipe = Recipe.query.filter_by(input_name=recipe.input_name).first()
         total_fat += recipe.percentage_of_fat
@@ -304,6 +294,7 @@ def calculate_recipes(recipe_date):
 
 
 
+
     recipe_totals = json.dumps(recipe_totals)
 
 
@@ -315,7 +306,7 @@ def calculate_recipes(recipe_date):
 
 @app.route('/error')
 def has_found_error():
-    """ return an HTML string saying something went wrong..."""
+    """ return an HTML template saying something went wrong..."""
 
     return render_template("error.html")
     
@@ -325,16 +316,13 @@ def has_found_error():
 def process_recipe_info(input_name):
     """Make API call, store stuff for the ingredient."""
   
-    # user_recipe = request.args.get('input_name')
     # grab input name and query database for it. 
+    # search for the term within the database. 
+    # if not there, call the api and search for the information within the api. 
 
 
     user_recipe_obj = Recipe.query.filter_by(input_name=input_name).first()
-    print user_recipe_obj
-    # print "This is the user_recipe_obj: ", user_recipe_obj 
 
-    #break down input_name into a list of words and then query for whatever matches the most, and ask, did you mean this?"
-    #if user presses nope, move on to making the api call. 
     if user_recipe_obj:
         input_name = user_recipe_obj.input_name 
         percentage_of_fat = user_recipe_obj.percentage_of_fat
@@ -350,12 +338,9 @@ def process_recipe_info(input_name):
         percentage_of_protein = "{0:.2f}".format(percentage_of_protein)
         recipe_data['percentage_of_protein'] = percentage_of_protein
 
-        print recipe_data
-
         recipe_data = json.dumps(recipe_data)
 
-    # search for the term within the database. 
-    # if not there, call the api and search for the information within the api. 
+
     else:
         # first check to make sure that the user has inputted a valid input_name (one which isn't none)
         print input_name

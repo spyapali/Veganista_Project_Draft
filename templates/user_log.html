@@ -2,7 +2,7 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1>{{ firstname }}'s Food Log</h1>
+<h1>Select Date</h1>
 
 
 <!-- <h3>Calculated BMI: </h3>
@@ -20,28 +20,17 @@ Here is your calculated BMI, and here is your calculated protein, fat and carboh
 
 <!-- convert bottom into a button -->
 
-<form action="/show_recipes_date/date", method='GET'> 
+<form action="/show_recipes_date/date/{{ user.user_id }}", method='GET'> 
 	Select Date:
 		<input type="date" name="date">
-		<input type="submit">
+		<input type="submit" value= "see dishes"><br><br><br><br>
 </form>
 
- 	<h2>List of Dishes</h2>
- 	<ul>
- 		{% for input in user.inputs %}
- 			<li>
- 				<a id="link" href= "/recipe/input/{{ input.input_name }}">
- 					{{ input.input_name.title() }}     {{input.eaten_at}}
-
- 				</a>
- 			</li>
- 		{% endfor %}
- 	</ul>
 
 
-
-
-
+<form action='/dish-directory/{{ user.user_id }}'>
+	<input type="submit" value="dish directory">
+</form>
 
 <form action='/logout'>
 	<input type="submit" value="log out">
@@ -54,6 +43,10 @@ Here is your calculated BMI, and here is your calculated protein, fat and carboh
 
 <form action='/calculate-recipe-totals'>
 	<input type="submit" value="show progress">
+</form>
+
+ <form action='/user/{{ user.user_id }}/input_name'>
+	<input type="submit" value="select date">
 </form>
 
 

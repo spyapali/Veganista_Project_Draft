@@ -40,10 +40,10 @@ $(document).ready(function(){
 										type: 'POST',
 										width: 450,
 
-										onSelect: function(suggestion) {
-											$('#selection').html('You selected: ' + suggestion.value);
+										// onSelect: function(suggestion) {
+										// 	$('#selection').html('You selected: ' + suggestion.value);
  
-                              				},
+          //                     				},
 
                               			showNoSuggestionNotice: true,
   
@@ -60,10 +60,18 @@ $(document).ready(function(){
 </form>
 
 
- <form action='/user-log/{{ user.user_id }}/input_name'>
-	<input type="submit" value="view food log">
+ <form action='/dish-directory/{{ user.user_id }}'>
+	<input type="submit" value="dish directory">
 </form>
 
+
+ <form action='/user-log/{{ user.user_id }}/input_name'>
+	<input type="submit" value="select date">
+</form>
+
+ <form action='/calculate-recipe-totals'>
+	<input type="submit" value="show progress">
+</form>
 
 
 {% endblock %}
