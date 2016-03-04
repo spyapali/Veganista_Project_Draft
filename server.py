@@ -284,6 +284,15 @@ def calculate_recipe_totals():
 
 
 
+@app.route('/redirect-calculate-recipes/date', methods=['GET'])
+def redirect_calculate_recipes():
+    """redirect to creating new daily value graph"""
+
+    recipe_date = request.args.get("date")
+    recipe_date = datetime.strptime(recipe_date, "%Y-%m-%d") # coverted into datetime object. 
+    recipe_date = recipe_date.date()
+
+    return redirect(url_for('calculate_recipes', recipe_date=recipe_date))
 
 @app.route('/calculate-recipes/<recipe_date>', methods=['GET', 'POST'])
 def calculate_recipes(recipe_date):

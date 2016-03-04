@@ -5,6 +5,27 @@
 
 <h1>Progress on {{ recipe_date }}</h1>
 
+<div class="col-xs-12 col-md-4 col-md-offset-0">
+  <form action='/redirect-calculate-recipes/date', method='GET'> 
+    Select Date:
+      <input class="form-control" id="datePicker" type="date" name="date" value="YYYY-MM-DD">
+      <input class="btn btn-primary" type="submit" value= "view chart"><br><br><br><br>
+  </form>
+</div>
+
+<script>
+
+  Date.prototype.toDateInputValue = (function() {
+      var local = new Date(this);
+      local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+      return local.toJSON().slice(0,10);
+  });
+
+  document.getElementById('datePicker').value = new Date().toDateInputValue();
+
+
+</script>
+
   <div class="nutritional_data_bar">
       <canvas id="barChart"></canvas>
       <div id="barLegend" class="bar-legend"></div>
@@ -52,5 +73,6 @@
     // };
 	});
   </script>
+
 
 {% endblock %}
