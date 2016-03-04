@@ -6,6 +6,7 @@
 
 
 
+
 <!-- <h3>Calculated BMI: </h3>
 
 <h3> Calculated Height Requirement: </h3> 
@@ -34,31 +35,12 @@ Here is your calculated BMI, and here is your calculated protein, fat and carboh
  	</ul><br><br><br>
 
 
-<form action="/calculate-recipes/{{ recipe_date }}", method='GET'>
-	<input type="submit" value="show daily progress">
-</form>
 
 
-<form action="/user/{{ user.user_id }}", method='GET'>
-	<input type="submit" value="enter a dish">
-</form>
-
-<form action="/dish-directory/{{ user.user_id }}">
-	<input type="submit" value="dish directory">
-</form>
-
-<form action="/user-log/{{ user.user_id }}/input_name">
-	<input type="submit" value="select a new date">
-</form>
-
-
-<form action='/logout'>
-	<input type="submit" value="log out">
-</form>
-
-
- 
-
+<a class="btn btn-default" href='/calculate-recipes/{{ recipe_date }}'><i class="fa fa-bar-chart"></i></i> View Daily Progress</a>
+<a class="btn btn-default" href="/dish-directory"><i class="fa fa-leaf"></i> Dish Directory</a>
+<a class="btn btn-default" href="/user-log/input_name"><i class="fa fa-calendar"></i> View Day</a>
+<a class="btn btn-default" href="/calculate-recipe-totals"><i class="fa fa-line-chart"></i> Show Progress</a>
 
 
 {% endblock %}

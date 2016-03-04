@@ -20,66 +20,37 @@ Here is your calculated BMI, and here is your calculated protein, fat and carboh
 
 <!-- convert bottom into a button -->
 
-<form action='/user/{{ user.user_id }}/input', method=['GET']>
-<div class = "container">
-	<label>Please enter name of dish: 
- 		<input type="text" name="input" id="autocomplete" class="form-control" placeholder="Enter Dish Name" />
- 	</label><br><br>
- 	<label> Serving: 1 </label><br><br>
+<form action='/user/input' method=['GET']>
+	<label for="input">Please enter name of dish:</label>
+ 	<input type="text" name="input" id="autocomplete" class="form-control" placeholder="Enter Dish Name" />
+ 	<br><br>
+ 	<label> Serving: 1 </label>
+ 	<br><br>
  	<!-- 	<select>
  			<option value="1">1</option>
  			<option value="2">2</option>
  			<option value="3">3</option>
  			<option value="4">4</option>
  		</select><br><br> -->
- 	</div>
  	<div id="selection" class="required"></div>
-
- </div>
- 	<input type="submit" value="submit">
+ 	<input class="btn btn-primary" type="submit" value="submit">
 </form>
 
 
 <script type="text/javascript">
 
-$(document).ready(function(){	
+$(function() {	
 	$("#autocomplete").autocomplete({
-										serviceUrl:'ajaxautocomplete',
-										type: 'POST',
-										width: 450,
-
-										// onSelect: function(suggestion) {
-										// 	$('#selection').html('You selected: ' + suggestion.value);
- 
-          //                     				},
-
-                              			showNoSuggestionNotice: true,
-  
-                              			noSuggestionNotice: 'No more suggestions in database',
-							
-								}); 
-	});
+		serviceUrl:'ajaxautocomplete',
+		type: 'POST',
+		width: 450,
+		showNoSuggestionNotice: true,
+		noSuggestionNotice: 'No more suggestions in database',
+	}); 
+});
 
 </script>
 
-
-<form action='/logout'>
-	<input type="submit" value="log out">
-</form>
-
-
- <form action='/dish-directory/{{ user.user_id }}'>
-	<input type="submit" value="dish directory">
-</form>
-
-
- <form action='/user-log/{{ user.user_id }}/input_name'>
-	<input type="submit" value="select date">
-</form>
-
- <form action='/calculate-recipe-totals'>
-	<input type="submit" value="show progress">
-</form>
-
+{% include "actions.html" %}
 
 {% endblock %}

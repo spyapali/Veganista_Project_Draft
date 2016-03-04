@@ -20,35 +20,27 @@ Here is your calculated BMI, and here is your calculated protein, fat and carboh
 
 <!-- convert bottom into a button -->
 
-<form action="/show_recipes_date/date/{{ user.user_id }}", method='GET'> 
+
+<form action="/show_recipes_date/date", method='GET'> 
 	Select Date:
-		<input type="date" name="date">
-		<input type="submit" value= "see dishes"><br><br><br><br>
+		<input class="form-control" id="datePicker" type="date" name="date" value="YYYY-MM-DD">
+		<input class="btn btn-primary" type="submit" value= "see dishes"><br><br><br><br>
 </form>
 
+<script>
+
+	Date.prototype.toDateInputValue = (function() {
+	    var local = new Date(this);
+	    local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+	    return local.toJSON().slice(0,10);
+	});
+
+	document.getElementById('datePicker').value = new Date().toDateInputValue();
 
 
-<form action='/dish-directory/{{ user.user_id }}'>
-	<input type="submit" value="dish directory">
-</form>
-
-<form action='/logout'>
-	<input type="submit" value="log out">
-</form>
+</script>
 
 
- <form action='/user/{{ user.user_id }}'>
-	<input type="submit" value="enter new dish">
-</form>
-
-<form action='/calculate-recipe-totals'>
-	<input type="submit" value="show progress">
-</form>
-
- <form action='/user/{{ user.user_id }}/input_name'>
-	<input type="submit" value="select date">
-</form>
-
-
+{% include "actions.html" %}
 
 {% endblock %}

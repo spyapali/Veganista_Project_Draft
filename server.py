@@ -39,7 +39,10 @@ app.jinja_env.undefined = StrictUndefined
 def index():
     """Homepage"""
 
-    return render_template('homepage.html')
+    if session.has_key("user_id"):
+        return redirect("/user")
+    else:
+        return render_template('homepage.html')
 
 @app.route('/sign-up-form')
 def sign_up():
@@ -92,7 +95,7 @@ def process_user_login():
         user_id = user.user_id
         session["user_id"] = user_id
         flash("Logged In")
-        user_details = "/user/%d" % (user_id)
+        user_details = "/user"
         return redirect(user_details)
     else:
         flash("Sorry, you're not a registered user. Please sign up.")
@@ -100,21 +103,27 @@ def process_user_login():
 
 
 
-@app.route("/user/<int:user_id>", methods=['GET', 'POST'])
-def show_user_page(user_id):
+@app.route("/user", methods=['GET', 'POST'])
+def show_user_page():
     """User homepage."""
-    # To-do: Store e-mail and password in user data table. 
-    user = User.query.get(user_id)
 
-    #grab the first name of the user object. 
-    firstname = user.first_name
+    user_id=session["user_id"]
+
+    if user_id != None:
+        # To-do: Store e-mail and password in user data table. 
+        user = User.query.get(user_id)
+
+        #grab the first name of the user object. 
+        firstname = user.first_name
+    else:
+        return redirect("/login")
 
     
 
     return render_template('user.html', firstname=firstname, user=user)
 
 
-@app.route("/user/ajaxautocomplete", methods=['GET', 'POST'])
+@app.route("/ajaxautocomplete", methods=['GET', 'POST'])
 def ajaxautocomplete():
     result = ""
     if request.method == 'POST':
@@ -135,9 +144,10 @@ def ajaxautocomplete():
         return "oops"
 
 
-@app.route('/user/<int:user_id>/input', methods=['GET', 'POST'])
-def process_input(user_id):
+@app.route('/user/input', methods=['GET', 'POST'])
+def process_input():
 
+    user_id=session["user_id"]
     input_resp = request.args.get('input')
     input_resp = input_resp.lower()
     input_obj = Input(user_id=user_id, eaten_at=date.today(), input_name=input_resp)
@@ -153,22 +163,26 @@ def process_input(user_id):
     session[input_obj.input_id] = serving
 
     flash('Your recipe has been stored.')
-    return redirect(url_for('show_user_log', user_id=user_id))
+    current_date = date.today().strftime('%Y-%m-%d')
+    return redirect(url_for('show_recipe_date', date=current_date))
 
 
-@app.route('/user-log/<int:user_id>/input_name')
-def show_user_log(user_id):
+@app.route('/user-log/input_name')
+def show_user_log():
     """show log of user inputs. """
 
+    user_id=session["user_id"]
     user = User.query.get(user_id)
     firstname = user.first_name
 
     return render_template("user_log.html", user=user, firstname=firstname)
 
 
-@app.route('/dish-directory/<int:user_id>')
-def show_dishes_directory(user_id):
+@app.route('/dish-directory')
+def show_dishes_directory():
     """Show dishes directory page"""
+    
+    user_id=session["user_id"]
     user = User.query.get(user_id)
     firstname = user.first_name
     input_names_list = []
@@ -182,8 +196,8 @@ def show_dishes_directory(user_id):
 
     return render_template("dishes_directory.html", input_names_list=input_names_list, user=user, firstname=firstname)
 
-@app.route('/show_recipes_date/date/<int:user_id>', methods=['GET','POST'])
-def show_recipe_date(user_id):
+@app.route('/show_recipes_date/date/', methods=['GET','POST'])
+def show_recipe_date():
     """Show recipes for each date selected"""
 #   Grab the date from the URL. 
     recipe_date = request.args.get("date") # A unicode string. 
@@ -191,13 +205,11 @@ def show_recipe_date(user_id):
     recipe_date = recipe_date.date()
     recipe_inputs = Input.query.filter_by(eaten_at = recipe_date).all()
     new_recipe_date = recipe_date.strftime('%m/%d')
+    user_id=session["user_id"]
     user = User.query.get(user_id)
     firstname = user.first_name
 
-
-
-
-
+  
 
      
 
@@ -424,30 +436,6 @@ def process_recipe_info(input_name):
 
 
 
-
-   
-    # return "<HTML><body>%s</body></HTML>" %(user_recipe)
-
-
-    # if ingredient is in cache 
-    # get object from the database 
-    # get protein, fat and carbs 
-    # calc efficiency of daily requirements for one serving. 
-
-    # else:
-
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
-
-
-
-
-
-    # recipe = request.args.get('recipe')
-    # To-Do list: display the recipe name and the time during which the recipe appeared.
-
-
-    # return render_template('recipe.html', recipe=recipe)
 
 
 
