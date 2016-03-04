@@ -149,6 +149,8 @@ def process_input(user_id):
     firstname = user.first_name
 
     input_name = input_obj.input_name
+    serving = request.args.get('serving')
+    session[input_obj.input_id] = serving
 
     flash('Your recipe has been stored.')
     return redirect(url_for('show_user_log', user_id=user_id))
@@ -191,6 +193,11 @@ def show_recipe_date(user_id):
     new_recipe_date = recipe_date.strftime('%m/%d')
     user = User.query.get(user_id)
     firstname = user.first_name
+
+
+
+
+
 
      
 

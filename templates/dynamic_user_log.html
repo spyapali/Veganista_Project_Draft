@@ -2,7 +2,7 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1>{{ firstname }}'s Dishes on {{ new_recipe_date }}</h1>
+<h1>{{ firstname }}'s Dishes on {{ new_recipe_date }}</h1><br>
 
 
 
@@ -23,7 +23,6 @@ Here is your calculated BMI, and here is your calculated protein, fat and carboh
 
 	
 
- 	<h2>Dishes</h2>
  	<ul>
  		{% for input in recipe_inputs %}
  			<li>
@@ -32,7 +31,7 @@ Here is your calculated BMI, and here is your calculated protein, fat and carboh
  				</a>
  			</li>
  		{% endfor %}
- 	</ul>
+ 	</ul><br><br><br>
 
 
 <form action="/calculate-recipes/{{ recipe_date }}", method='GET'>

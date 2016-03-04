@@ -25,12 +25,20 @@ Here is your calculated BMI, and here is your calculated protein, fat and carboh
 	<label>Please enter name of dish: 
  		<input type="text" name="input" id="autocomplete" class="form-control" placeholder="Enter Dish Name" />
  	</label><br><br>
+ 	<label> Serving: 1 </label><br><br>
+ 	<!-- 	<select>
+ 			<option value="1">1</option>
+ 			<option value="2">2</option>
+ 			<option value="3">3</option>
+ 			<option value="4">4</option>
+ 		</select><br><br> -->
  	</div>
  	<div id="selection" class="required"></div>
 
  </div>
  	<input type="submit" value="submit">
 </form>
+
 
 <script type="text/javascript">
 
@@ -47,7 +55,7 @@ $(document).ready(function(){
 
                               			showNoSuggestionNotice: true,
   
-                              			noSuggestionNotice: 'Sorry, no matching results',
+                              			noSuggestionNotice: 'No more suggestions in database',
 							
 								}); 
 	});
