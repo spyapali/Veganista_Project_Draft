@@ -186,12 +186,26 @@ def show_dishes_directory():
     user = User.query.get(user_id)
     firstname = user.first_name
     input_names_list = []
-    input_names = db.session.query(Input.input_name).group_by(Input.input_name).all()
-    for input_combo in input_names:
-        input_name1 = input_combo[0]
-        input_names_list.append(input_name1)
 
-    input_names_list = sorted(input_names_list)
+    input_users = Input.query.filter(Input.user_id == user_id).all()
+    print "Here are the input dates: ", input_users
+    input_name_dictionary= {} # A dictionary to group dates 
+    for input_obj in input_users:
+        if input_obj.input_name not in input_name_dictionary:
+            input_name_dictionary[input_obj.input_name] = 1
+        else:
+            input_name_dictionary[input_obj.input_name] += 1
+    print "here are the input name dictionary: ", input_name_dictionary 
+
+    input_names_list = sorted(input_name_dictionary.keys())
+
+
+    # input_names = db.session.query(Input.input_name).group_by(Input.input_name).all()
+    # for input_combo in input_names:
+    #     input_name1 = input_combo[0]
+    #     input_names_list.append(input_name1)
+
+    # input_names_list = sorted(input_names_list)
 
 
     return render_template("dishes_directory.html", input_names_list=input_names_list, user=user, firstname=firstname)
@@ -200,10 +214,11 @@ def show_dishes_directory():
 def show_recipe_date():
     """Show recipes for each date selected"""
 #   Grab the date from the URL. 
+    user_id = session["user_id"]
     recipe_date = request.args.get("date") # A unicode string. 
     recipe_date = datetime.strptime(recipe_date, "%Y-%m-%d") # coverted into datetime object. 
     recipe_date = recipe_date.date()
-    recipe_inputs = Input.query.filter_by(eaten_at = recipe_date).all()
+    recipe_inputs = Input.query.filter_by(eaten_at = recipe_date, user_id=user_id).all()
     new_recipe_date = recipe_date.strftime('%m/%d')
     user_id=session["user_id"]
     user = User.query.get(user_id)
@@ -317,12 +332,12 @@ def calculate_recipes(recipe_date):
     # Filter out each recipe based on input name in the Caching Database 
     # Grab nutritional data from each recipe 
     # Add all of them up. 
-  
+    user_id = session["user_id"]
     total_fat = 0 
     total_carbs = 0 
     total_protein = 0 
     # Want to calculate the total percentages of fat, carbs and protein 
-    recipe_inputs = Input.query.filter_by(eaten_at = recipe_date).all()
+    recipe_inputs = Input.query.filter_by(eaten_at = recipe_date, user_id = user_id).all()
 
     for recipe in recipe_inputs:
         recipe = Recipe.query.filter_by(input_name=recipe.input_name).first()
