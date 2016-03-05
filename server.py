@@ -223,16 +223,33 @@ def calculate_recipe_totals():
     # render an html page which allows viewers to select whether they'd like to see progress over week or month. 
 
       # divide up the recipes based on time 
-      # calculate each total based on macronutrient in question 
+      # calculate each total based on macronutrient in question     
 
-    recipe_dates = db.session.query(Input.eaten_at).group_by(Input.eaten_at).all()
+    user_id = session["user_id"]
+    input_users = Input.query.filter(Input.user_id == user_id).all()
+    print "Here are the input dates: ", input_users
+    date_dictionary_first = {} # A dictionary to group dates 
+    for input_obj in input_users:
+        if input_obj.eaten_at not in date_dictionary_first:
+            date_dictionary_first[input_obj.eaten_at] = 1
+        else:
+            date_dictionary_first[input_obj.eaten_at] += 1
+
+    print "here is my date dictionary first: ", date_dictionary_first
+
+    date_list = sorted(date_dictionary_first.keys())
+    print "here is date list: ", date_list 
+
+    # recipe_dates = db.session.query(Input.eaten_at).group_by(Input.eaten_at).all()
+    # for date in date_dictionary_first.keys():
+    #     date_list.append(date)
  
-    date_list = []
-    for date_combo in recipe_dates:
-      date = date_combo[0]
-      date_list.append(date)
+    # date_list = []
+    # for date_combo in recipe_dates:
+    #   date = date_combo[0]
+    #   date_list.append(date)
 
-    date_list.sort()
+    # date_list.sort()
 
     new_date_list = []
     for item in date_list:
@@ -241,7 +258,7 @@ def calculate_recipe_totals():
 
     date_dictionary = {}
     for i in range(len(date_list)):
-      date_dictionary[date_list[i]] = Input.query.filter(Input.eaten_at == date_list[i]).all()
+      date_dictionary[date_list[i]] = Input.query.filter(Input.eaten_at == date_list[i], Input.user_id == user_id).all()
 
     total_percentages = {}
     for key, value in date_dictionary.items():
@@ -453,7 +470,9 @@ def process_recipe_info(input_name):
 def log_out_user():
     """Logging out user and redirecting to homepage."""
 
-    del session["user_id"]
+    session.clear()
+    # del session["user_id"]
+    # del session["input_name"]
     flash("Logged out")
     return redirect("/")
 
