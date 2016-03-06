@@ -377,7 +377,6 @@ def calculate_recipes(recipe_date):
 
     for recipe in recipe_inputs:
         recipe_pot = Recipe.query.filter(Recipe.input_name == recipe.input_name).first()
-        print "HERE IS MY RECIPE_POT*********** ", recipe_pot
         if recipe_pot == None:
             json_string = requests.get("https://api.edamam.com/search?q="+recipe.input_name+"&app_id=22a5c077&app_key=9e70212d2e504688b4f44ee2651a7769&health=vegan") 
             # import pdb; pdb.set_trace()
@@ -474,8 +473,6 @@ def process_recipe_info(input_name):
     # grab input name and query database for it. 
     # search for the term within the database. 
     # if not there, call the api and search for the information within the api. 
-
-
     user_recipe_obj = Recipe.query.filter_by(input_name=input_name).first()
 
     if user_recipe_obj:
@@ -498,6 +495,7 @@ def process_recipe_info(input_name):
 
     else:
         # first check to make sure that the user has inputted a valid input_name (one which isn't none)
+
         print input_name
         input_name = str(input_name)
         print input_name
