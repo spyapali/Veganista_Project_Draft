@@ -159,8 +159,6 @@ def process_input():
     firstname = user.first_name
 
     input_name = input_obj.input_name
-    serving = request.args.get('serving')
-    session[input_obj.input_id] = serving
 
     flash('Your recipe has been stored.')
     current_date = date.today().strftime('%Y-%m-%d')
@@ -200,14 +198,6 @@ def show_dishes_directory():
     input_names_list = sorted(input_name_dictionary.keys())
 
 
-    # input_names = db.session.query(Input.input_name).group_by(Input.input_name).all()
-    # for input_combo in input_names:
-    #     input_name1 = input_combo[0]
-    #     input_names_list.append(input_name1)
-
-    # input_names_list = sorted(input_names_list)
-
-
     return render_template("dishes_directory.html", input_names_list=input_names_list, user=user, firstname=firstname)
 
 @app.route('/show_recipes_date/date/', methods=['GET','POST'])
@@ -241,30 +231,18 @@ def calculate_recipe_totals():
       # calculate each total based on macronutrient in question     
 
     user_id = session["user_id"]
+
     input_users = Input.query.filter(Input.user_id == user_id).all()
-    print "Here are the input dates: ", input_users
+
     date_dictionary_first = {} # A dictionary to group dates 
+
     for input_obj in input_users:
         if input_obj.eaten_at not in date_dictionary_first:
             date_dictionary_first[input_obj.eaten_at] = 1
         else:
             date_dictionary_first[input_obj.eaten_at] += 1
 
-    print "here is my date dictionary first: ", date_dictionary_first
-
     date_list = sorted(date_dictionary_first.keys())
-    print "here is date list: ", date_list 
-
-    # recipe_dates = db.session.query(Input.eaten_at).group_by(Input.eaten_at).all()
-    # for date in date_dictionary_first.keys():
-    #     date_list.append(date)
- 
-    # date_list = []
-    # for date_combo in recipe_dates:
-    #   date = date_combo[0]
-    #   date_list.append(date)
-
-    # date_list.sort()
 
     new_date_list = []
     for item in date_list:
@@ -277,25 +255,82 @@ def calculate_recipe_totals():
 
     total_percentages = {}
     for key, value in date_dictionary.items():
-        total_fat = 0 
-        total_protein = 0 
-        total_carbs = 0 
+        total_t_fat = 0 
+        total_t_protein = 0 
+        total_t_carbs = 0 
 
 
         for recipe in value:
             recipe_obj = Recipe.query.filter_by(input_name = recipe.input_name).first()
             print "this is my recipe object: ", recipe_obj
-            total_fat += recipe_obj.percentage_of_fat
-            total_protein += recipe_obj.percentage_of_protein
-            total_carbs += recipe_obj.percentage_of_carbs
+            if recipe_obj == None:
+                json_string = requests.get("https://api.edamam.com/search?q="+recipe.input_name+"&app_id=22a5c077&app_key=9e70212d2e504688b4f44ee2651a7769&health=vegan") 
+                # import pdb; pdb.set_trace()
+                print "json_string", json_string  
+                json_dict = json_string.json() # converting this into a python dictionary.
+                print "json_dict", json_dict
+
+                if json_dict['hits']:
+
+                    json_recipe = json_dict['hits'][0]
+                     
+                    recipe_dict = json_recipe['recipe']
+                    
+
+                    # grabbing serving of the recipe from json object. 
+                    serving = recipe_dict['yield']
+
+                    # grabbing name of the recipe from json object. 
+                    recipe_name = recipe_dict['label'].lower()
+
+                    # grabbing fat percentage of the recipe from the json object. 
+                    total_fat = recipe_dict['totalDaily']['FAT']
+                    percentage_of_fat = total_fat['quantity']
+                    percentage_of_fat = float(percentage_of_fat)/float(serving)
+                    print percentage_of_fat
+
+                    # grabbing carbs percentage of the recipe from the json object. 
+                    total_carbs = recipe_dict['totalDaily']['CHOCDF']
+                    percentage_of_carbs = total_carbs['quantity']
+                    percentage_of_carbs = float(percentage_of_carbs)/float(serving)
+                    print percentage_of_carbs
+
+                    # grabbing protein percentage of the recipe from the json object. 
+                    total_protein = recipe_dict['totalDaily']['PROCNT']
+                    percentage_of_protein = total_protein['quantity']
+                    percentage_of_protein = float(percentage_of_protein)/float(serving)
+                    print percentage_of_protein
+
+                    # cache the data being called from the api.
+
+                    stored_recipe = Recipe(input_name=recipe.input_name, percentage_of_protein=percentage_of_protein,
+                                                        percentage_of_fat=percentage_of_fat, percentage_of_carbs=percentage_of_carbs)
+
+                    db.session.add(stored_recipe)
+                    db.session.commit()
+
+                    print "here is my recipe: ", recipe 
+                    total_t_fat += stored_recipe.percentage_of_fat
+                    total_t_carbs += stored_recipe.percentage_of_carbs
+                    total_t_protein += stored_recipe.percentage_of_protein
+
+                else:
+                    return redirect ("/error")
+
+            else:
+                print "here is my recipe: ", recipe 
+                total_t_fat += recipe_obj.percentage_of_fat
+                total_t_carbs += recipe_obj.percentage_of_carbs
+                total_t_protein += recipe_obj.percentage_of_protein
+            
 
         key = key.strftime('%m/%d')
-        total_fat = "{0:.2f}".format(total_fat)
-        total_carbs = "{0:.2f}".format(total_carbs)
-        total_protein = "{0:.2f}".format(total_protein)
+        total_fat = "{0:.2f}".format(total_t_fat)
+        total_carbs = "{0:.2f}".format(total_t_carbs)
+        total_protein = "{0:.2f}".format(total_t_protein)
 
 
-        total_percentages[key] = {"total fat" : total_fat, "total protein" : total_protein, "total carbs" : total_carbs}
+        total_percentages[key] = {"total fat" : total_t_fat, "total protein" : total_t_protein, "total carbs" : total_t_carbs}
     
 
     d_total_fat = []
@@ -333,25 +368,84 @@ def calculate_recipes(recipe_date):
     # Grab nutritional data from each recipe 
     # Add all of them up. 
     user_id = session["user_id"]
-    total_fat = 0 
-    total_carbs = 0 
-    total_protein = 0 
+    total_t_fat = 0 
+    total_t_carbs = 0 
+    total_t_protein = 0 
     # Want to calculate the total percentages of fat, carbs and protein 
     recipe_inputs = Input.query.filter_by(eaten_at = recipe_date, user_id = user_id).all()
+    print "here are my recipe inputs: ", recipe_inputs
 
     for recipe in recipe_inputs:
-        recipe = Recipe.query.filter_by(input_name=recipe.input_name).first()
-        total_fat += recipe.percentage_of_fat
-        total_carbs += recipe.percentage_of_carbs
-        total_protein += recipe.percentage_of_protein
+        recipe_pot = Recipe.query.filter(Recipe.input_name == recipe.input_name).first()
+        print "HERE IS MY RECIPE_POT*********** ", recipe_pot
+        if recipe_pot == None:
+            json_string = requests.get("https://api.edamam.com/search?q="+recipe.input_name+"&app_id=22a5c077&app_key=9e70212d2e504688b4f44ee2651a7769&health=vegan") 
+            # import pdb; pdb.set_trace()
+            print "json_string", json_string  
+            json_dict = json_string.json() # converting this into a python dictionary.
+            print "json_dict", json_dict
+
+            if json_dict['hits']:
+
+                json_recipe = json_dict['hits'][0]
+                 
+                recipe_dict = json_recipe['recipe']
+                
+
+                # grabbing serving of the recipe from json object. 
+                serving = recipe_dict['yield']
+
+                # grabbing name of the recipe from json object. 
+                recipe_name = recipe_dict['label'].lower()
+
+                # grabbing fat percentage of the recipe from the json object. 
+                total_fat = recipe_dict['totalDaily']['FAT']
+                percentage_of_fat = total_fat['quantity']
+                percentage_of_fat = float(percentage_of_fat)/float(serving)
+                print percentage_of_fat
+
+                # grabbing carbs percentage of the recipe from the json object. 
+                total_carbs = recipe_dict['totalDaily']['CHOCDF']
+                percentage_of_carbs = total_carbs['quantity']
+                percentage_of_carbs = float(percentage_of_carbs)/float(serving)
+                print percentage_of_carbs
+
+                # grabbing protein percentage of the recipe from the json object. 
+                total_protein = recipe_dict['totalDaily']['PROCNT']
+                percentage_of_protein = total_protein['quantity']
+                percentage_of_protein = float(percentage_of_protein)/float(serving)
+                print percentage_of_protein
+
+                # cache the data being called from the api.
+
+                stored_recipe = Recipe(input_name=recipe.input_name, percentage_of_protein=percentage_of_protein,
+                                                    percentage_of_fat=percentage_of_fat, percentage_of_carbs=percentage_of_carbs)
+
+                db.session.add(stored_recipe)
+                db.session.commit()
+
+                print "here is my recipe: ", recipe 
+                total_t_fat += stored_recipe.percentage_of_fat
+                total_t_carbs += stored_recipe.percentage_of_carbs
+                total_t_protein += stored_recipe.percentage_of_protein
+
+            else:
+                return redirect ("/error")
+
+        else:
+            print "here is my recipe: ", recipe 
+            total_t_fat += recipe_pot.percentage_of_fat
+            total_t_carbs += recipe_pot.percentage_of_carbs
+            total_t_protein += recipe_pot.percentage_of_protein
+
 
     recipe_totals = {}
-    total_fat = "{0:.2f}".format(total_fat)
-    recipe_totals['total_fat'] = total_fat
-    total_carbs = "{0:.2f}".format(total_carbs)
-    recipe_totals['total_carbs'] = total_carbs
-    total_protein = "{0:.2f}".format(total_protein)
-    recipe_totals['total_protein'] = total_protein
+    total_t_fat = "{0:.2f}".format(total_t_fat)
+    recipe_totals['total_fat'] = total_t_fat
+    total_t_carbs = "{0:.2f}".format(total_t_carbs)
+    recipe_totals['total_carbs'] = total_t_carbs
+    total_t_protein = "{0:.2f}".format(total_t_protein)
+    recipe_totals['total_protein'] = total_t_protein
 
 
 
@@ -361,8 +455,8 @@ def calculate_recipes(recipe_date):
 
 
 
-    return render_template("recipes_date.html", recipe_date=recipe_date, total_fat=total_fat, total_carbs=total_carbs,
-                                             total_protein=total_protein, recipe_totals=recipe_totals)
+    return render_template("recipes_date.html", recipe_date=recipe_date, total_fat=total_t_fat, total_carbs=total_t_carbs,
+                                             total_protein=total_t_protein, recipe_totals=recipe_totals)
 
 
 @app.route('/error')
