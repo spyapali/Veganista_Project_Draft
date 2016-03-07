@@ -264,58 +264,7 @@ def calculate_recipe_totals():
             recipe_obj = Recipe.query.filter_by(input_name = recipe.input_name).first()
             print "this is my recipe object: ", recipe_obj
             if recipe_obj == None:
-                json_string = requests.get("https://api.edamam.com/search?q="+recipe.input_name+"&app_id=22a5c077&app_key=9e70212d2e504688b4f44ee2651a7769&health=vegan") 
-                # import pdb; pdb.set_trace()
-                print "json_string", json_string  
-                json_dict = json_string.json() # converting this into a python dictionary.
-                print "json_dict", json_dict
-
-                if json_dict['hits']:
-
-                    json_recipe = json_dict['hits'][0]
-                     
-                    recipe_dict = json_recipe['recipe']
-                    
-
-                    # grabbing serving of the recipe from json object. 
-                    serving = recipe_dict['yield']
-
-                    # grabbing name of the recipe from json object. 
-                    recipe_name = recipe_dict['label'].lower()
-
-                    # grabbing fat percentage of the recipe from the json object. 
-                    total_fat = recipe_dict['totalDaily']['FAT']
-                    percentage_of_fat = total_fat['quantity']
-                    percentage_of_fat = float(percentage_of_fat)/float(serving)
-                    print percentage_of_fat
-
-                    # grabbing carbs percentage of the recipe from the json object. 
-                    total_carbs = recipe_dict['totalDaily']['CHOCDF']
-                    percentage_of_carbs = total_carbs['quantity']
-                    percentage_of_carbs = float(percentage_of_carbs)/float(serving)
-                    print percentage_of_carbs
-
-                    # grabbing protein percentage of the recipe from the json object. 
-                    total_protein = recipe_dict['totalDaily']['PROCNT']
-                    percentage_of_protein = total_protein['quantity']
-                    percentage_of_protein = float(percentage_of_protein)/float(serving)
-                    print percentage_of_protein
-
-                    # cache the data being called from the api.
-
-                    stored_recipe = Recipe(input_name=recipe.input_name, percentage_of_protein=percentage_of_protein,
-                                                        percentage_of_fat=percentage_of_fat, percentage_of_carbs=percentage_of_carbs)
-
-                    db.session.add(stored_recipe)
-                    db.session.commit()
-
-                    print "here is my recipe: ", recipe 
-                    total_t_fat += stored_recipe.percentage_of_fat
-                    total_t_carbs += stored_recipe.percentage_of_carbs
-                    total_t_protein += stored_recipe.percentage_of_protein
-
-                else:
-                    return redirect ("/error")
+                 return redirect(url_for('recipe_nutrition', input_name=recipe.input_name))
 
             else:
                 print "here is my recipe: ", recipe 
@@ -378,59 +327,7 @@ def calculate_recipes(recipe_date):
     for recipe in recipe_inputs:
         recipe_pot = Recipe.query.filter(Recipe.input_name == recipe.input_name).first()
         if recipe_pot == None:
-            json_string = requests.get("https://api.edamam.com/search?q="+recipe.input_name+"&app_id=22a5c077&app_key=9e70212d2e504688b4f44ee2651a7769&health=vegan") 
-            # import pdb; pdb.set_trace()
-            print "json_string", json_string  
-            json_dict = json_string.json() # converting this into a python dictionary.
-            print "json_dict", json_dict
-
-            if json_dict['hits']:
-
-                json_recipe = json_dict['hits'][0]
-                 
-                recipe_dict = json_recipe['recipe']
-                
-
-                # grabbing serving of the recipe from json object. 
-                serving = recipe_dict['yield']
-
-                # grabbing name of the recipe from json object. 
-                recipe_name = recipe_dict['label'].lower()
-
-                # grabbing fat percentage of the recipe from the json object. 
-                total_fat = recipe_dict['totalDaily']['FAT']
-                percentage_of_fat = total_fat['quantity']
-                percentage_of_fat = float(percentage_of_fat)/float(serving)
-                print percentage_of_fat
-
-                # grabbing carbs percentage of the recipe from the json object. 
-                total_carbs = recipe_dict['totalDaily']['CHOCDF']
-                percentage_of_carbs = total_carbs['quantity']
-                percentage_of_carbs = float(percentage_of_carbs)/float(serving)
-                print percentage_of_carbs
-
-                # grabbing protein percentage of the recipe from the json object. 
-                total_protein = recipe_dict['totalDaily']['PROCNT']
-                percentage_of_protein = total_protein['quantity']
-                percentage_of_protein = float(percentage_of_protein)/float(serving)
-                print percentage_of_protein
-
-                # cache the data being called from the api.
-
-                stored_recipe = Recipe(input_name=recipe.input_name, percentage_of_protein=percentage_of_protein,
-                                                    percentage_of_fat=percentage_of_fat, percentage_of_carbs=percentage_of_carbs)
-
-                db.session.add(stored_recipe)
-                db.session.commit()
-
-                print "here is my recipe: ", recipe 
-                total_t_fat += stored_recipe.percentage_of_fat
-                total_t_carbs += stored_recipe.percentage_of_carbs
-                total_t_protein += stored_recipe.percentage_of_protein
-
-            else:
-                return redirect ("/error")
-
+            return redirect(url_for('recipe_nutrition', input_name=recipe.input_name))
         else:
             print "here is my recipe: ", recipe 
             total_t_fat += recipe_pot.percentage_of_fat
@@ -492,84 +389,167 @@ def process_recipe_info(input_name):
 
         recipe_data = json.dumps(recipe_data)
 
+        return render_template("recipe.html", input_name=input_name, percentage_of_fat=percentage_of_fat, percentage_of_carbs=percentage_of_carbs,
+                                             percentage_of_protein=percentage_of_protein, data=recipe_data)
 
     else:
-        # first check to make sure that the user has inputted a valid input_name (one which isn't none)
-
-        print input_name
-        input_name = str(input_name)
-        print input_name
-
-        # json_string = open(argv[1]).read()
-        # json_dict = json.loads(json_string)
-        json_string = requests.get("https://api.edamam.com/search?q="+input_name+"&app_id=22a5c077&app_key=9e70212d2e504688b4f44ee2651a7769&health=vegan") 
-        # import pdb; pdb.set_trace()
-        print "json_string", json_string  
-        json_dict = json_string.json() # converting this into a python dictionary.
-        print "json_dict", json_dict
-
-        if json_dict['hits']:
-
-            json_recipe = json_dict['hits'][0]
-            print "json_recipe", json_recipe 
-            recipe = json_recipe['recipe']
-            print "recipe", recipe 
-
-            # grabbing serving of the recipe from json object. 
-            serving = recipe['yield']
-
-            # grabbing name of the recipe from json object. 
-            recipe_name = recipe['label'].lower()
-
-            # grabbing fat percentage of the recipe from the json object. 
-            total_fat = recipe['totalDaily']['FAT']
-            percentage_of_fat = total_fat['quantity']
-            percentage_of_fat = float(percentage_of_fat)/float(serving)
-            print percentage_of_fat
-
-            # grabbing carbs percentage of the recipe from the json object. 
-            total_carbs = recipe['totalDaily']['CHOCDF']
-            percentage_of_carbs = total_carbs['quantity']
-            percentage_of_carbs = float(percentage_of_carbs)/float(serving)
-            print percentage_of_carbs
-
-            # grabbing protein percentage of the recipe from the json object. 
-            total_protein = recipe['totalDaily']['PROCNT']
-            percentage_of_protein = total_protein['quantity']
-            percentage_of_protein = float(percentage_of_protein)/float(serving)
-            print percentage_of_protein
-
-            # cache the data being called from the api.
-
-            stored_recipe = Recipe(input_name=input_name, percentage_of_protein=percentage_of_protein,
-                                                percentage_of_fat=percentage_of_fat, percentage_of_carbs=percentage_of_carbs)
-
-            db.session.add(stored_recipe)
-            db.session.commit()
-
-            #create a dictionary for chart.js 
-            recipe_data = {}
-            percentage_of_fat = "{0:.2f}".format(percentage_of_fat)
-            recipe_data['percentage_of_fat'] = percentage_of_fat
-            percentage_of_carbs = "{0:.2f}".format(percentage_of_carbs)
-            recipe_data['percentage_of_carbs'] = percentage_of_carbs
-            percentage_of_protein = "{0:.2f}".format(percentage_of_protein)
-            recipe_data['percentage_of_protein'] = percentage_of_protein
-
-            recipe_data = json.dumps(recipe_data)
+        return redirect(url_for('recipe_nutrition', input_name=input_name))
 
 
-        else:
-            flash ("Oops...")
-            return redirect('/error')
+    # else:
+
+    #     # first check to make sure that the user has inputted a valid input_name (one which isn't none)
+
+
+    #     print input_name
+    #     input_name = str(input_name)
+    #     print input_name
+
+    #     # json_string = open(argv[1]).read()
+    #     # json_dict = json.loads(json_string)
+    #     json_string = requests.get("https://api.edamam.com/search?q="+input_name+"&app_id=22a5c077&app_key=9e70212d2e504688b4f44ee2651a7769&health=vegan") 
+    #     # import pdb; pdb.set_trace()
+    #     print "json_string", json_string  
+    #     json_dict = json_string.json() # converting this into a python dictionary.
+    #     print "json_dict", json_dict
+
+    #     if json_dict['hits']:
+
+    #         json_recipe = json_dict['hits'][0]
+    #         print "json_recipe", json_recipe 
+    #         recipe = json_recipe['recipe']
+    #         print "recipe", recipe 
+
+    #         # grabbing serving of the recipe from json object. 
+    #         serving = recipe['yield']
+
+    #         # grabbing name of the recipe from json object. 
+    #         recipe_name = recipe['label'].lower()
+
+    #         # grabbing fat percentage of the recipe from the json object. 
+    #         total_fat = recipe['totalDaily']['FAT']
+    #         percentage_of_fat = total_fat['quantity']
+    #         percentage_of_fat = float(percentage_of_fat)/float(serving)
+    #         print percentage_of_fat
+
+    #         # grabbing carbs percentage of the recipe from the json object. 
+    #         total_carbs = recipe['totalDaily']['CHOCDF']
+    #         percentage_of_carbs = total_carbs['quantity']
+    #         percentage_of_carbs = float(percentage_of_carbs)/float(serving)
+    #         print percentage_of_carbs
+
+    #         # grabbing protein percentage of the recipe from the json object. 
+    #         total_protein = recipe['totalDaily']['PROCNT']
+    #         percentage_of_protein = total_protein['quantity']
+    #         percentage_of_protein = float(percentage_of_protein)/float(serving)
+    #         print percentage_of_protein
+
+    #         # cache the data being called from the api.
+
+    #         stored_recipe = Recipe(input_name=input_name, percentage_of_protein=percentage_of_protein,
+    #                                             percentage_of_fat=percentage_of_fat, percentage_of_carbs=percentage_of_carbs)
+
+    #         db.session.add(stored_recipe)
+    #         db.session.commit()
+
+    #         #create a dictionary for chart.js 
+    #         recipe_data = {}
+    #         percentage_of_fat = "{0:.2f}".format(percentage_of_fat)
+    #         recipe_data['percentage_of_fat'] = percentage_of_fat
+    #         percentage_of_carbs = "{0:.2f}".format(percentage_of_carbs)
+    #         recipe_data['percentage_of_carbs'] = percentage_of_carbs
+    #         percentage_of_protein = "{0:.2f}".format(percentage_of_protein)
+    #         recipe_data['percentage_of_protein'] = percentage_of_protein
+
+    #         recipe_data = json.dumps(recipe_data)
+
+
+    #     else:
+    #         flash ("Oops...")
+    #         return redirect('/error')
+
+
+
+    # return render_template("recipe.html", input_name=input_name, percentage_of_fat=percentage_of_fat, percentage_of_carbs=percentage_of_carbs,
+    #                                          percentage_of_protein=percentage_of_protein, data=recipe_data)
+
+
+
+
+@app.route('/recipe/recipe-nutrition/<input_name>')
+def recipe_nutrition(input_name):
+
+    print input_name
+    input_name = str(input_name)
+    print input_name
+
+    # json_string = open(argv[1]).read()
+    # json_dict = json.loads(json_string)
+    json_string = requests.get("https://api.edamam.com/search?q="+input_name+"&app_id=22a5c077&app_key=9e70212d2e504688b4f44ee2651a7769&health=vegan") 
+    # import pdb; pdb.set_trace()
+    print "json_string", json_string  
+    json_dict = json_string.json() # converting this into a python dictionary.
+    print "json_dict", json_dict
+
+    if json_dict['hits']:
+
+        json_recipe = json_dict['hits'][0]
+        print "json_recipe", json_recipe 
+        recipe = json_recipe['recipe']
+        print "recipe", recipe 
+
+        # grabbing serving of the recipe from json object. 
+        serving = recipe['yield']
+
+        # grabbing name of the recipe from json object. 
+        recipe_name = recipe['label'].lower()
+
+        # grabbing fat percentage of the recipe from the json object. 
+        total_fat = recipe['totalDaily']['FAT']
+        percentage_of_fat = total_fat['quantity']
+        percentage_of_fat = float(percentage_of_fat)/float(serving)
+        print percentage_of_fat
+
+        # grabbing carbs percentage of the recipe from the json object. 
+        total_carbs = recipe['totalDaily']['CHOCDF']
+        percentage_of_carbs = total_carbs['quantity']
+        percentage_of_carbs = float(percentage_of_carbs)/float(serving)
+        print percentage_of_carbs
+
+        # grabbing protein percentage of the recipe from the json object. 
+        total_protein = recipe['totalDaily']['PROCNT']
+        percentage_of_protein = total_protein['quantity']
+        percentage_of_protein = float(percentage_of_protein)/float(serving)
+        print percentage_of_protein
+
+        # cache the data being called from the api.
+
+        stored_recipe = Recipe(input_name=input_name, percentage_of_protein=percentage_of_protein,
+                                            percentage_of_fat=percentage_of_fat, percentage_of_carbs=percentage_of_carbs)
+
+        db.session.add(stored_recipe)
+        db.session.commit()
+
+        #create a dictionary for chart.js 
+        recipe_data = {}
+        percentage_of_fat = "{0:.2f}".format(percentage_of_fat)
+        recipe_data['percentage_of_fat'] = percentage_of_fat
+        percentage_of_carbs = "{0:.2f}".format(percentage_of_carbs)
+        recipe_data['percentage_of_carbs'] = percentage_of_carbs
+        percentage_of_protein = "{0:.2f}".format(percentage_of_protein)
+        recipe_data['percentage_of_protein'] = percentage_of_protein
+
+        recipe_data = json.dumps(recipe_data)
+
+
+    else:
+        flash ("Oops...")
+        return redirect('/error')
 
 
 
     return render_template("recipe.html", input_name=input_name, percentage_of_fat=percentage_of_fat, percentage_of_carbs=percentage_of_carbs,
                                              percentage_of_protein=percentage_of_protein, data=recipe_data)
-
-
-
 
 
 
