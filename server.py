@@ -271,6 +271,7 @@ def calculate_recipe_totals():
 
     # Created a sorted list of the dates during which the user inputted dishes. 
     date_list = sorted(date_dictionary_first.keys())
+    print "here is my date_list: ", date_list 
 
     # Creating the x axis for the line graph with the dates formatted properly 'mm/dd'
     new_date_list = []
@@ -354,6 +355,7 @@ def calculate_recipes(recipe_date):
     # Filter out each recipe based on input name in the Caching Database 
     # Grab nutritional data from each recipe 
     # Add all of them up. 
+    print "here is  my recipe_date: ", type(recipe_date)
     user_id = session["user_id"]
     total_t_fat = 0 
     total_t_carbs = 0 
