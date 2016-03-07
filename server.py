@@ -23,6 +23,7 @@ from datetime import datetime, date
 from sqlalchemy import func 
 
 
+# useful tip, debugger: import pdb; pdb.set_trace()
 
 
 app = Flask(__name__, static_url_path='/static')
@@ -158,22 +159,28 @@ def process_input():
     # creating input objects whenever the user enters a dish name. 
     user_id=session["user_id"]
     input_resp = request.args.get('input')
-    input_resp = input_resp.lower()
-    input_obj = Input(user_id=user_id, eaten_at=date.today(), input_name=input_resp)
 
-    db.session.add(input_obj)
-    db.session.commit()
+    #If the user input is not a string, then return the error page. 
+    if input_resp.isalpha() != True:
+        flash("Please input a dish name!")
+        return redirect('/error')
+    else:
+        input_resp = input_resp.lower()
+        input_obj = Input(user_id=user_id, eaten_at=date.today(), input_name=input_resp)
 
-    user = User.query.get(user_id)
-    firstname = user.first_name
+        db.session.add(input_obj)
+        db.session.commit()
 
-    input_name = input_obj.input_name
+        user = User.query.get(user_id)
+        firstname = user.first_name
 
-    flash('Your recipe has been stored.')
+        input_name = input_obj.input_name
 
-    #Setting default to the current date. 
-    current_date = date.today().strftime('%Y-%m-%d')
-    return redirect(url_for('show_recipe_date', date=current_date))
+        flash('Your dish has been stored.')
+
+        #Setting default to the current date. 
+        current_date = date.today().strftime('%Y-%m-%d')
+        return redirect(url_for('show_recipe_date', date=current_date))
 
 
 @app.route('/user-log/input_name')
@@ -435,8 +442,6 @@ def process_recipe_info(input_name):
 def recipe_nutrition(input_name):
     """If dish isn't in caching database, call edamam api and create new recipe object with info from the returned json string"""
 
-     # useful tip, debugger: import pdb; pdb.set_trace()
-
     input_name = str(input_name)
     
     json_string = requests.get("https://api.edamam.com/search?q="+input_name+"&app_id=22a5c077&app_key=9e70212d2e504688b4f44ee2651a7769&health=vegan") 
@@ -459,21 +464,33 @@ def recipe_nutrition(input_name):
         recipe_name = recipe['label'].lower()
 
         # grabbing fat percentage of the recipe from the json object. 
-        total_fat = recipe['totalDaily']['FAT']
-        percentage_of_fat = total_fat['quantity']
-        percentage_of_fat = float(percentage_of_fat)/float(serving)
+        try:
+            total_fat = recipe['totalDaily']['FAT']
+            percentage_of_fat = total_fat['quantity']
+            percentage_of_fat = float(percentage_of_fat)/float(serving)
+
+        except KeyError:
+            percentage_of_fat = 0
    
 
-        # grabbing carbs percentage of the recipe from the json object. 
-        total_carbs = recipe['totalDaily']['CHOCDF']
-        percentage_of_carbs = total_carbs['quantity']
-        percentage_of_carbs = float(percentage_of_carbs)/float(serving)
+        # grabbing carbs percentage of the recipe from the json object.
+        try: 
+            total_carbs = recipe['totalDaily']['CHOCDF']
+            percentage_of_carbs = total_carbs['quantity']
+            percentage_of_carbs = float(percentage_of_carbs)/float(serving)
+
+        except KeyError:
+            percentage_of_carbs = 0 
 
 
         # grabbing protein percentage of the recipe from the json object. 
-        total_protein = recipe['totalDaily']['PROCNT']
-        percentage_of_protein = total_protein['quantity']
-        percentage_of_protein = float(percentage_of_protein)/float(serving)
+        try:
+            total_protein = recipe['totalDaily']['PROCNT']
+            percentage_of_protein = total_protein['quantity']
+            percentage_of_protein = float(percentage_of_protein)/float(serving)
+
+        except KeyError:
+            percentage_of_protein = 0 
     
         # cache the data being called from the api.
         stored_recipe = Recipe(input_name=input_name, percentage_of_protein=percentage_of_protein,
