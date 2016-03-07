@@ -235,9 +235,6 @@ def show_recipe_date():
     user = User.query.get(user_id)
     firstname = user.first_name
 
-  
-
-     
 
     return render_template("dynamic_user_log.html", recipe_inputs=recipe_inputs, user=user, firstname=firstname, new_recipe_date=new_recipe_date, recipe_date=recipe_date)
 
@@ -436,11 +433,14 @@ def process_recipe_info(input_name):
 
 @app.route('/recipe/recipe-nutrition/<input_name>')
 def recipe_nutrition(input_name):
+    """If dish isn't in caching database, call edamam api and create new recipe object with info from the returned json string"""
+
+     # useful tip, debugger: import pdb; pdb.set_trace()
 
     input_name = str(input_name)
     
     json_string = requests.get("https://api.edamam.com/search?q="+input_name+"&app_id=22a5c077&app_key=9e70212d2e504688b4f44ee2651a7769&health=vegan") 
-    # import pdb; pdb.set_trace()
+   
     
     json_dict = json_string.json() # converting this into a python dictionary.
 
