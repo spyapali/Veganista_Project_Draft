@@ -186,14 +186,12 @@ def show_dishes_directory():
     input_names_list = []
 
     input_users = Input.query.filter(Input.user_id == user_id).all()
-    print "Here are the input dates: ", input_users
     input_name_dictionary= {} # A dictionary to group dates 
     for input_obj in input_users:
         if input_obj.input_name not in input_name_dictionary:
             input_name_dictionary[input_obj.input_name] = 1
         else:
             input_name_dictionary[input_obj.input_name] += 1
-    print "here are the input name dictionary: ", input_name_dictionary 
 
     input_names_list = sorted(input_name_dictionary.keys())
 
@@ -394,84 +392,6 @@ def process_recipe_info(input_name):
 
     else:
         return redirect(url_for('recipe_nutrition', input_name=input_name))
-
-
-    # else:
-
-    #     # first check to make sure that the user has inputted a valid input_name (one which isn't none)
-
-
-    #     print input_name
-    #     input_name = str(input_name)
-    #     print input_name
-
-    #     # json_string = open(argv[1]).read()
-    #     # json_dict = json.loads(json_string)
-    #     json_string = requests.get("https://api.edamam.com/search?q="+input_name+"&app_id=22a5c077&app_key=9e70212d2e504688b4f44ee2651a7769&health=vegan") 
-    #     # import pdb; pdb.set_trace()
-    #     print "json_string", json_string  
-    #     json_dict = json_string.json() # converting this into a python dictionary.
-    #     print "json_dict", json_dict
-
-    #     if json_dict['hits']:
-
-    #         json_recipe = json_dict['hits'][0]
-    #         print "json_recipe", json_recipe 
-    #         recipe = json_recipe['recipe']
-    #         print "recipe", recipe 
-
-    #         # grabbing serving of the recipe from json object. 
-    #         serving = recipe['yield']
-
-    #         # grabbing name of the recipe from json object. 
-    #         recipe_name = recipe['label'].lower()
-
-    #         # grabbing fat percentage of the recipe from the json object. 
-    #         total_fat = recipe['totalDaily']['FAT']
-    #         percentage_of_fat = total_fat['quantity']
-    #         percentage_of_fat = float(percentage_of_fat)/float(serving)
-    #         print percentage_of_fat
-
-    #         # grabbing carbs percentage of the recipe from the json object. 
-    #         total_carbs = recipe['totalDaily']['CHOCDF']
-    #         percentage_of_carbs = total_carbs['quantity']
-    #         percentage_of_carbs = float(percentage_of_carbs)/float(serving)
-    #         print percentage_of_carbs
-
-    #         # grabbing protein percentage of the recipe from the json object. 
-    #         total_protein = recipe['totalDaily']['PROCNT']
-    #         percentage_of_protein = total_protein['quantity']
-    #         percentage_of_protein = float(percentage_of_protein)/float(serving)
-    #         print percentage_of_protein
-
-    #         # cache the data being called from the api.
-
-    #         stored_recipe = Recipe(input_name=input_name, percentage_of_protein=percentage_of_protein,
-    #                                             percentage_of_fat=percentage_of_fat, percentage_of_carbs=percentage_of_carbs)
-
-    #         db.session.add(stored_recipe)
-    #         db.session.commit()
-
-    #         #create a dictionary for chart.js 
-    #         recipe_data = {}
-    #         percentage_of_fat = "{0:.2f}".format(percentage_of_fat)
-    #         recipe_data['percentage_of_fat'] = percentage_of_fat
-    #         percentage_of_carbs = "{0:.2f}".format(percentage_of_carbs)
-    #         recipe_data['percentage_of_carbs'] = percentage_of_carbs
-    #         percentage_of_protein = "{0:.2f}".format(percentage_of_protein)
-    #         recipe_data['percentage_of_protein'] = percentage_of_protein
-
-    #         recipe_data = json.dumps(recipe_data)
-
-
-    #     else:
-    #         flash ("Oops...")
-    #         return redirect('/error')
-
-
-
-    # return render_template("recipe.html", input_name=input_name, percentage_of_fat=percentage_of_fat, percentage_of_carbs=percentage_of_carbs,
-    #                                          percentage_of_protein=percentage_of_protein, data=recipe_data)
 
 
 
