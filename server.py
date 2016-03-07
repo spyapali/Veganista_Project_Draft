@@ -39,6 +39,7 @@ app.jinja_env.undefined = StrictUndefined
 def index():
     """Homepage"""
 
+    # if the user is logged into the session, render user page. Otherwise show homepage. 
     if session.has_key("user_id"):
         return redirect("/user")
     else:
@@ -48,12 +49,15 @@ def index():
 def sign_up():
     """Sign Up""" 
 
+    # Show sign up form. 
     return render_template('sign_up.html')
 
 
 @app.route('/sign-up', methods=['POST'])
 def sign_up_process():
     """Sign up processing""" 
+
+    # Grab the user's firstname, lastname, username and password from the sign up form and create a user object in the user table.
 
     firstname = request.form.get("firstname")
     lastname = request.form.get("lastname")
@@ -74,7 +78,7 @@ def sign_up_process():
 
 @app.route('/login')
 def log_in():
-    """Sign Up""" 
+    """Show login form""" 
 
     return render_template("login.html")
 
@@ -116,6 +120,7 @@ def show_user_page():
         #grab the first name of the user object. 
         firstname = user.first_name
     else:
+        # if there is no user id in the session, redirect to login. 
         return redirect("/login")
 
     
@@ -125,20 +130,23 @@ def show_user_page():
 
 @app.route("/ajaxautocomplete", methods=['GET', 'POST'])
 def ajaxautocomplete():
+    """Implementing autocomplete"""
+
     result = ""
     if request.method == 'POST':
+        # The query refers to the user input. 
         query = request.form['query']
 
         try:
             input_names = []
             result = Recipe.query.filter(Recipe.input_name.like('%' + query + '%')).all()
             for r in result:
-
                 input_name = r.input_name
                 input_names.append(input_name)
-            print result
         finally:               
             a = 2
+        # passing in a list of input names as a value for suggestions, where suggestions is the key. 
+        # Dictionary used for autocomplete dropdown.
         return json.dumps({"suggestions": input_names})
     else:
         return "oops"
@@ -147,6 +155,7 @@ def ajaxautocomplete():
 @app.route('/user/input', methods=['GET', 'POST'])
 def process_input():
 
+    # creating input objects whenever the user enters a dish name. 
     user_id=session["user_id"]
     input_resp = request.args.get('input')
     input_resp = input_resp.lower()
@@ -161,14 +170,17 @@ def process_input():
     input_name = input_obj.input_name
 
     flash('Your recipe has been stored.')
+
+    #Setting default to the current date. 
     current_date = date.today().strftime('%Y-%m-%d')
     return redirect(url_for('show_recipe_date', date=current_date))
 
 
 @app.route('/user-log/input_name')
 def show_user_log():
-    """show log of user inputs. """
+    """show option to change date for users. """
 
+    # Grab user information from session and user table to display name. 
     user_id=session["user_id"]
     user = User.query.get(user_id)
     firstname = user.first_name
@@ -180,13 +192,17 @@ def show_user_log():
 def show_dishes_directory():
     """Show dishes directory page"""
     
+    # Grab user information from session and user table to get list of dishes that particular user entered into account. 
     user_id=session["user_id"]
     user = User.query.get(user_id)
     firstname = user.first_name
     input_names_list = []
 
+    # Creating dictionary to grab unique dish names that the user entered to display in their dish directory. 
     input_users = Input.query.filter(Input.user_id == user_id).all()
-    input_name_dictionary= {} # A dictionary to group dates 
+
+    input_name_dictionary= {} 
+
     for input_obj in input_users:
         if input_obj.input_name not in input_name_dictionary:
             input_name_dictionary[input_obj.input_name] = 1
@@ -201,13 +217,20 @@ def show_dishes_directory():
 @app.route('/show_recipes_date/date/', methods=['GET','POST'])
 def show_recipe_date():
     """Show recipes for each date selected"""
-#   Grab the date from the URL. 
+
     user_id = session["user_id"]
-    recipe_date = request.args.get("date") # A unicode string. 
-    recipe_date = datetime.strptime(recipe_date, "%Y-%m-%d") # coverted into datetime object. 
+    #Grab the date from the url, which is a unicode string, convert it into a datetime date object. 
+    recipe_date = request.args.get("date") 
+    recipe_date = datetime.strptime(recipe_date, "%Y-%m-%d")
     recipe_date = recipe_date.date()
+
+    #Query input database for dishes stored during that date. 
     recipe_inputs = Input.query.filter_by(eaten_at = recipe_date, user_id=user_id).all()
+
+    #Convert the date into a string month/date format 
     new_recipe_date = recipe_date.strftime('%m/%d')
+
+    #Grab user information from session and user table. 
     user_id=session["user_id"]
     user = User.query.get(user_id)
     firstname = user.first_name
@@ -221,12 +244,12 @@ def show_recipe_date():
 
 @app.route('/calculate-recipe-totals')
 def calculate_recipe_totals():
-    # divide up the recipes based on time 
-    # calculate each total based on macronutrient in question 
-    # render an html page which allows viewers to select whether they'd like to see progress over week or month. 
+    """Pass list of x-axis labels and lists of total percentages of fat, protein and carbs into a chartJS line graph object."""
 
-      # divide up the recipes based on time 
-      # calculate each total based on macronutrient in question     
+    ###################### Overview #########################
+    # divide up the dishes based on time 
+    # calculate each total based on macronutrient in question 
+    #########################################################
 
     user_id = session["user_id"]
 
@@ -234,23 +257,28 @@ def calculate_recipe_totals():
 
     date_dictionary_first = {} # A dictionary to group dates 
 
+    # Creating a dictionary with the keys as the dates during which the user inputted dishes. 
     for input_obj in input_users:
         if input_obj.eaten_at not in date_dictionary_first:
             date_dictionary_first[input_obj.eaten_at] = 1
         else:
             date_dictionary_first[input_obj.eaten_at] += 1
 
+    # Created a sorted list of the dates during which the user inputted dishes. 
     date_list = sorted(date_dictionary_first.keys())
 
+    # Creating the x axis for the line graph with the dates formatted properly 'mm/dd'
     new_date_list = []
     for item in date_list:
         item = item.strftime('%m/%d')
         new_date_list.append(item)
 
+    # Creating a dictionary with the key being the datetime date, and the value being the list of dish objects inputted during that date. 
     date_dictionary = {}
     for i in range(len(date_list)):
       date_dictionary[date_list[i]] = Input.query.filter(Input.eaten_at == date_list[i], Input.user_id == user_id).all()
 
+    # Creating a dictionary with the key being the date during which the dish was consumed and the values being the total percentage of fat, percentage of carbs and percentage of protein consumed during that date.
     total_percentages = {}
     for key, value in date_dictionary.items():
         total_t_fat = 0 
@@ -280,10 +308,12 @@ def calculate_recipe_totals():
         total_percentages[key] = {"total fat" : total_t_fat, "total protein" : total_t_protein, "total carbs" : total_t_carbs}
     
 
+    # Creating three lists which will be passed into each dataset of the line chart: for percentage of protein, fat and carbs. 
+    # Lists will contain info in the order of sorted dates, so that data goes in order of dates. 
     d_total_fat = []
     d_total_carbs = []
     d_total_protein = []
-    new_total_percentages = {}
+
 
     for i in new_date_list:
         d_total_fat.append(total_percentages[i]["total fat"])
@@ -292,6 +322,8 @@ def calculate_recipe_totals():
 
 
     total_percentages = json.dumps("total_percentages")
+
+    # converting into json string. 
     date_list = json.dumps(new_date_list)
 
 
@@ -303,6 +335,7 @@ def calculate_recipe_totals():
 def redirect_calculate_recipes():
     """redirect to creating new daily value graph"""
 
+    # rendering daily value percentages bar chart for changing the date. 
     recipe_date = request.args.get("date")
     recipe_date = datetime.strptime(recipe_date, "%Y-%m-%d") # coverted into datetime object. 
     recipe_date = recipe_date.date()
@@ -311,6 +344,8 @@ def redirect_calculate_recipes():
 
 @app.route('/calculate-recipes/<recipe_date>', methods=['GET', 'POST'])
 def calculate_recipes(recipe_date):
+    """Pass dictionary of total percentages of fat, protein and carbs into a ChartJS bar chart object."""
+
     # Filter out each recipe based on input name in the Caching Database 
     # Grab nutritional data from each recipe 
     # Add all of them up. 
@@ -318,21 +353,22 @@ def calculate_recipes(recipe_date):
     total_t_fat = 0 
     total_t_carbs = 0 
     total_t_protein = 0 
+
     # Want to calculate the total percentages of fat, carbs and protein 
     recipe_inputs = Input.query.filter_by(eaten_at = recipe_date, user_id = user_id).all()
-    print "here are my recipe inputs: ", recipe_inputs
-
+ 
+    #Storing dish total calculations for a specific date. 
     for recipe in recipe_inputs:
         recipe_pot = Recipe.query.filter(Recipe.input_name == recipe.input_name).first()
         if recipe_pot == None:
             return redirect(url_for('recipe_nutrition', input_name=recipe.input_name))
         else:
-            print "here is my recipe: ", recipe 
+          
             total_t_fat += recipe_pot.percentage_of_fat
             total_t_carbs += recipe_pot.percentage_of_carbs
             total_t_protein += recipe_pot.percentage_of_protein
 
-
+    #Creating dictionary that will be used to retrieve data for bar chart. 
     recipe_totals = {}
     total_t_fat = "{0:.2f}".format(total_t_fat)
     recipe_totals['total_fat'] = total_t_fat
@@ -343,7 +379,7 @@ def calculate_recipes(recipe_date):
 
 
 
-
+    # converting into json string. 
     recipe_totals = json.dumps(recipe_totals)
 
 
@@ -357,6 +393,7 @@ def calculate_recipes(recipe_date):
 def has_found_error():
     """ return an HTML template saying something went wrong..."""
 
+    # error page will render if Edamam API returns no results, and no dish name is stored in the database. 
     return render_template("error.html")
     
 
@@ -385,6 +422,7 @@ def process_recipe_info(input_name):
         percentage_of_protein = "{0:.2f}".format(percentage_of_protein)
         recipe_data['percentage_of_protein'] = percentage_of_protein
 
+        # converting into json string. 
         recipe_data = json.dumps(recipe_data)
 
         return render_template("recipe.html", input_name=input_name, percentage_of_fat=percentage_of_fat, percentage_of_carbs=percentage_of_carbs,
@@ -399,24 +437,20 @@ def process_recipe_info(input_name):
 @app.route('/recipe/recipe-nutrition/<input_name>')
 def recipe_nutrition(input_name):
 
-    print input_name
     input_name = str(input_name)
-    print input_name
-
-    # json_string = open(argv[1]).read()
-    # json_dict = json.loads(json_string)
+    
     json_string = requests.get("https://api.edamam.com/search?q="+input_name+"&app_id=22a5c077&app_key=9e70212d2e504688b4f44ee2651a7769&health=vegan") 
     # import pdb; pdb.set_trace()
-    print "json_string", json_string  
+    
     json_dict = json_string.json() # converting this into a python dictionary.
-    print "json_dict", json_dict
+
 
     if json_dict['hits']:
 
         json_recipe = json_dict['hits'][0]
-        print "json_recipe", json_recipe 
+       
         recipe = json_recipe['recipe']
-        print "recipe", recipe 
+
 
         # grabbing serving of the recipe from json object. 
         serving = recipe['yield']
@@ -428,29 +462,27 @@ def recipe_nutrition(input_name):
         total_fat = recipe['totalDaily']['FAT']
         percentage_of_fat = total_fat['quantity']
         percentage_of_fat = float(percentage_of_fat)/float(serving)
-        print percentage_of_fat
+   
 
         # grabbing carbs percentage of the recipe from the json object. 
         total_carbs = recipe['totalDaily']['CHOCDF']
         percentage_of_carbs = total_carbs['quantity']
         percentage_of_carbs = float(percentage_of_carbs)/float(serving)
-        print percentage_of_carbs
+
 
         # grabbing protein percentage of the recipe from the json object. 
         total_protein = recipe['totalDaily']['PROCNT']
         percentage_of_protein = total_protein['quantity']
         percentage_of_protein = float(percentage_of_protein)/float(serving)
-        print percentage_of_protein
-
+    
         # cache the data being called from the api.
-
         stored_recipe = Recipe(input_name=input_name, percentage_of_protein=percentage_of_protein,
                                             percentage_of_fat=percentage_of_fat, percentage_of_carbs=percentage_of_carbs)
 
         db.session.add(stored_recipe)
         db.session.commit()
 
-        #create a dictionary for chart.js 
+        #create a dictionary for chartJS 
         recipe_data = {}
         percentage_of_fat = "{0:.2f}".format(percentage_of_fat)
         recipe_data['percentage_of_fat'] = percentage_of_fat
@@ -459,6 +491,7 @@ def recipe_nutrition(input_name):
         percentage_of_protein = "{0:.2f}".format(percentage_of_protein)
         recipe_data['percentage_of_protein'] = percentage_of_protein
 
+        # converting into json string. 
         recipe_data = json.dumps(recipe_data)
 
 
@@ -477,9 +510,8 @@ def recipe_nutrition(input_name):
 def log_out_user():
     """Logging out user and redirecting to homepage."""
 
+    # Clear out session after the user logs out. 
     session.clear()
-    # del session["user_id"]
-    # del session["input_name"]
     flash("Logged out")
     return redirect("/")
 
