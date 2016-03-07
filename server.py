@@ -155,6 +155,7 @@ def ajaxautocomplete():
 
 @app.route('/user/input', methods=['GET', 'POST'])
 def process_input():
+    """Store user inputs as input objects"""
 
     # creating input objects whenever the user enters a dish name. 
     user_id=session["user_id"]
@@ -185,7 +186,7 @@ def process_input():
 
 @app.route('/user-log/input_name')
 def show_user_log():
-    """show option to change date for users. """
+    """Show option to change date for users. """
 
     # Grab user information from session and user table to display name. 
     user_id=session["user_id"]
@@ -337,7 +338,7 @@ def calculate_recipe_totals():
 
 @app.route('/redirect-calculate-recipes/date', methods=['GET'])
 def redirect_calculate_recipes():
-    """redirect to creating new daily value graph"""
+    """Redirect to creating new daily value graph"""
 
     # rendering daily value percentages bar chart for changing the date. 
     recipe_date = request.args.get("date")
@@ -395,7 +396,7 @@ def calculate_recipes(recipe_date):
 
 @app.route('/error')
 def has_found_error():
-    """ return an HTML template saying something went wrong..."""
+    """Return an HTML template saying something went wrong..."""
 
     # error page will render if Edamam API returns no results, and no dish name is stored in the database. 
     return render_template("error.html")
